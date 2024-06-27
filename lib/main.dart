@@ -393,7 +393,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 padding: const EdgeInsets.only(right: 20, bottom: 30),
                 child: Align(
                   alignment: Alignment.bottomRight,
-                  child: Text("مسائل بين الفرضين",
+                  child: Text("أحكام العلمين \nمسائل بين الفرضين",
                       style: TextStyle(
                           fontSize: 30,
                           fontFamily: "Lateef",

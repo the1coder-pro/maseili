@@ -1,4 +1,4 @@
-package com.example.masel
+package com.orange.masel
 
 import io.flutter.embedding.android.FlutterActivity
 
