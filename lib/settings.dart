@@ -28,4 +28,13 @@ class DarkThemeProvider with ChangeNotifier {
     darkThemePreference.setDarkTheme(value);
     notifyListeners();
   }
+
+  String _searchQuery = '';
+
+  String get searchQuery => _searchQuery;
+
+  set searchQuery(String value) {
+    _searchQuery = value;
+    notifyListeners();
+  }
 }
