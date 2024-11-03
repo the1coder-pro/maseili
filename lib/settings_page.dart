@@ -1,5 +1,5 @@
-
 import 'package:flutter/material.dart';
+
 import 'package:masel/settings.dart';
 import 'package:provider/provider.dart';
 
@@ -41,7 +41,6 @@ class _SettingsPageState extends State<SettingsPage> {
                 child: Align(
                   alignment: Alignment.bottomRight,
                   child: Text("أحكام العلمين \nمسائل بين الفرضين",
-
                       style: TextStyle(
                           height: 0.9,
                           fontSize: 30,

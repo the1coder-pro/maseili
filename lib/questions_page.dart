@@ -74,7 +74,10 @@ class _QuestionsPageState extends State<QuestionsPage> {
                 final questions = value.values.toList();
                 if (questions.isEmpty) {
                   return const Center(
-                    child: Text("لا توجد أسئلة"),
+                    child: Text(
+                      "لا توجد أسئلة",
+                      style: TextStyle(fontSize: 25),
+                    ),
                   );
                 }
                 return PageTransitionSwitcher(
@@ -141,51 +144,92 @@ class _QuestionsPageState extends State<QuestionsPage> {
                                             themeProvider.searchQuery.isEmpty)
                                         .toList()[index];
 
-                                    return Card.filled(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .primaryContainer,
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          border: Border.all(
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .onPrimaryContainer),
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                        ),
-                                        child: ListTile(
-                                          trailing: IconButton(
-                                            icon: Icon(Icons.edit_outlined,
+                                    return GestureDetector(
+                                      onLongPressStart:
+                                          (LongPressStartDetails details) {
+                                        showMenu(
+                                          context: context,
+                                          position: RelativeRect.fromLTRB(
+                                            details.globalPosition.dx,
+                                            details.globalPosition.dy,
+                                            details.globalPosition.dx,
+                                            details.globalPosition.dy,
+                                          ),
+                                          items: [
+                                            PopupMenuItem<int>(
+                                              value: 0,
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  Icon(Icons.edit_outlined),
+                                                  Text("تعديل"),
+                                                ],
+                                              ),
+                                            ),
+                                            PopupMenuItem<int>(
+                                              value: 1,
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  Icon(Icons.delete_outline),
+                                                  Text("حذف"),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        ).then((value) {
+                                          if (value == 0) {
+                                            editDialog(
+                                                context, questions, index);
+                                          } else if (value == 1) {
+                                            // Delete mosque
+                                            deleteAQuestion(
+                                                context, questions, index);
+                                          }
+                                        });
+                                      },
+                                      child: Card.filled(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .secondaryContainer,
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            border: Border.all(
                                                 color: Theme.of(context)
                                                     .colorScheme
-                                                    .onPrimaryContainer),
-                                            onPressed: () {
-                                              editDialog(
-                                                  context, questions, index);
+                                                    .onSecondaryContainer),
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                          ),
+                                          child: ListTile(
+                                            title: Padding(
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
+                                              child: Text(question.question,
+                                                  style: TextStyle(
+                                                      color: Theme.of(context)
+                                                          .colorScheme
+                                                          .onPrimaryContainer,
+                                                      fontFamily:
+                                                          "Scheherazade",
+                                                      letterSpacing: 0)),
+                                            ),
+                                            onTap: () {
+                                              Navigator.push(context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) {
+                                                return QuestionView(
+                                                    index: index,
+                                                    carouselController:
+                                                        carouselController,
+                                                    questions: questions);
+                                              }));
                                             },
                                           ),
-                                          title: Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: Text(question.question!,
-                                                style: TextStyle(
-                                                    color: Theme.of(context)
-                                                        .colorScheme
-                                                        .onPrimaryContainer,
-                                                    fontFamily: "Scheherazade",
-                                                    letterSpacing: 0)),
-                                          ),
-                                          onTap: () {
-                                            Navigator.push(context,
-                                                MaterialPageRoute(
-                                                    builder: (context) {
-                                              return QuestionView(
-                                                  index: index,
-                                                  carouselController:
-                                                      carouselController,
-                                                  questions: questions);
-                                            }));
-                                          },
                                         ),
                                       ),
                                     );
@@ -210,7 +254,10 @@ class _QuestionsPageState extends State<QuestionsPage> {
                                 rows: questions
                                     .map((question) => DataRow(cells: [
                                           DataCell(Text(question.question)),
-                                          DataCell(Text(question.description!)),
+                                          DataCell(SizedBox(
+                                              width: 300,
+                                              child:
+                                                  Text(question.description!))),
                                           DataCell(Text(question.mosqueName)),
                                           DataCell(Icon(
                                               question.answered
@@ -240,6 +287,41 @@ class _QuestionsPageState extends State<QuestionsPage> {
               },
               child: const Icon(Icons.add),
             )));
+  }
+
+  Future<dynamic> deleteAQuestion(
+      BuildContext context, List<Question> questions, int index) {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return Directionality(
+            textDirection: TextDirection.rtl,
+            child: AlertDialog(
+              icon: const Icon(Icons.delete_outline),
+              iconColor: Theme.of(context).colorScheme.error,
+              title: const Text("حذف سؤال"),
+              content:
+                  Text("هل أنت متأكد من حذف '${questions[index].question}'؟"),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Text("لا"),
+                ),
+                FilledButton(
+                  onPressed: () {
+                    Box<Question> questionsBox =
+                        Hive.box<Question>('questions');
+                    questionsBox.deleteAt(index);
+                    Navigator.pop(context);
+                  },
+                  child: const Text("نعم"),
+                ),
+              ],
+            ),
+          );
+        });
   }
 }
 
@@ -346,20 +428,10 @@ class QuestionView extends StatelessWidget {
                                             letterSpacing: 0),
                                         minFontSize: 18,
                                         stepGranularity: 18,
-                                        maxLines: 8,
+                                        maxLines: 10,
                                         overflow: TextOverflow.ellipsis,
                                       ),
                                     )
-                                    // Flexible(
-                                    //   child: Text(question.description!,
-                                    //       textAlign: TextAlign.right,
-                                    //       textDirection: TextDirection.rtl,
-                                    //       style: TextStyle(
-                                    //           color: Colors.white,
-                                    //           fontFamily: "Scheherazade",
-                                    //           letterSpacing: 0,
-                                    //           fontSize: 25)),
-                                    // ),
                                   ],
                                 ),
                               ),

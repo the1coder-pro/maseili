@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:masel/mosque_model.dart';
 import 'package:masel/mosque_page.dart';
-import 'package:masel/question_model.dart';
 
 enum ViewType { gridView, listView }
 
@@ -58,12 +57,12 @@ class _MosquesPageState extends State<MosquesPage> {
               },
               child: const Text("إلغاء"),
             ),
-            OutlinedButton(
+            FilledButton(
               onPressed: () {
                 editMosque(index, _controller.text);
                 Navigator.of(context).pop();
               },
-              child: const Text("تعديل"),
+              child: const Text("حفظ"),
             ),
           ],
         ),
@@ -351,7 +350,7 @@ class _MosquesPageState extends State<MosquesPage> {
                       },
                       child: const Text("إلغاء"),
                     ),
-                    OutlinedButton(
+                    FilledButton(
                       onPressed: addMosque,
                       child: const Text("إضافة"),
                     ),
@@ -386,7 +385,7 @@ class _MosquesPageState extends State<MosquesPage> {
                   },
                   child: const Text("لا"),
                 ),
-                OutlinedButton(
+                FilledButton(
                   onPressed: () {
                     Box<Mosque> mosquesBox = Hive.box<Mosque>('mosques');
                     mosquesBox.deleteAt(index);

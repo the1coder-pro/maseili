@@ -42,6 +42,8 @@ dependencies:
   animations: ^2.0.11
   carousel_slider: ^5.0.0
   auto_size_text: ^3.0.0
+  syncfusion_flutter_xlsio: ^27.1.57
+  community_material_icon: ^5.9.55
 
 dev_dependencies:
   flutter_test:
