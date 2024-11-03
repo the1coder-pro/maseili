@@ -21,7 +21,7 @@ void main() async {
   runApp(const MyApp());
 }
 
-const textTheme =   TextTheme(
+const textTheme = TextTheme(
   displayLarge: TextStyle(fontFamily: "Lateef", fontSize: 151),
   displayMedium: TextStyle(fontFamily: "Lateef", fontSize: 94),
   displaySmall: TextStyle(fontFamily: "Lateef", fontSize: 76),
@@ -30,11 +30,11 @@ const textTheme =   TextTheme(
   titleLarge: TextStyle(fontFamily: "Lateef", fontSize: 31),
   titleMedium: TextStyle(fontFamily: "Lateef", fontSize: 25),
   titleSmall: TextStyle(fontFamily: "Lateef", fontSize: 22),
-  bodyLarge: TextStyle(fontFamily: "Rubik", fontSize: 23),
-  bodyMedium: TextStyle(fontFamily: "Rubik", fontSize: 21),
-  labelLarge: TextStyle(fontFamily: "Rubik", fontSize: 21),
-  bodySmall: TextStyle(fontFamily: "Rubik", fontSize: 18),
-  labelSmall: TextStyle(fontFamily: "Rubik", fontSize: 15),
+  bodyLarge: TextStyle(fontFamily: "Vazirmatn", fontSize: 23),
+  bodyMedium: TextStyle(fontFamily: "Vazirmatn", fontSize: 21),
+  labelLarge: TextStyle(fontFamily: "Vazirmatn", fontSize: 21),
+  bodySmall: TextStyle(fontFamily: "Vazirmatn", fontSize: 18),
+  labelSmall: TextStyle(fontFamily: "Vazirmatn", fontSize: 15),
 );
 
 class MyApp extends StatefulWidget {
@@ -67,18 +67,17 @@ class _MyAppState extends State<MyApp> {
           title: 'مسائل بين الفرضين',
           debugShowCheckedModeBanner: false,
           theme: ThemeData(
-            textTheme:textTheme,
+            textTheme: textTheme,
             colorScheme: MaterialTheme.lightScheme(),
             useMaterial3: true,
-
           ),
           darkTheme: ThemeData(
-            textTheme:textTheme,
+            textTheme: textTheme,
             colorScheme: MaterialTheme.darkScheme(),
             useMaterial3: true,
           ),
-          themeMode: themeMode.darkTheme ? ThemeMode.dark : ThemeMode.light,
           home: const MainPage(),
+          themeMode: themeMode.darkTheme ? ThemeMode.dark : ThemeMode.light,
         ),
       ),
     );
@@ -93,7 +92,6 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-
   int _selectedIndex = 0;
 
   Widget selectedPage(int index) {
@@ -101,7 +99,7 @@ class _MainPageState extends State<MainPage> {
       case 0:
         return const MosquesPage();
       case 1:
-      return const QuestionsPage();
+        return const QuestionsPage();
       case 2:
         return const SettingsPage();
       default:
@@ -111,40 +109,39 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Directionality(textDirection: TextDirection.rtl, child: Scaffold(
-      body: selectedPage(_selectedIndex),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: _selectedIndex,
-        onDestinationSelected: (int index) {
-          setState(() {
-            _selectedIndex = index;
-          });
-        },
-        destinations: const [
-          NavigationDestination(
-            selectedIcon: Icon(Icons.mosque),
-            icon: Icon(Icons.mosque_outlined),
-            label: 'المساجد',
+    precacheImage(AssetImage("assets/background_new.png"), context);
+    return Directionality(
+        textDirection: TextDirection.rtl,
+        child: Scaffold(
+          body: selectedPage(_selectedIndex),
+          bottomNavigationBar: NavigationBar(
+            selectedIndex: _selectedIndex,
+            onDestinationSelected: (int index) {
+              setState(() {
+                _selectedIndex = index;
+              });
+            },
+            destinations: const [
+              NavigationDestination(
+                selectedIcon: Icon(Icons.mosque),
+                icon: Icon(Icons.mosque_outlined),
+                label: 'المساجد',
+              ),
+              NavigationDestination(
+                selectedIcon: Icon(Icons.question_answer),
+                icon: Icon(Icons.question_answer_outlined),
+                label: 'المسائل',
+              ),
+              NavigationDestination(
+                selectedIcon: Icon(Icons.settings),
+                icon: Icon(Icons.settings_outlined),
+                label: 'الإعدادات',
+              ),
+            ],
           ),
-          NavigationDestination(
-            selectedIcon: Icon(Icons.question_answer),
-            icon: Icon(Icons.question_answer_outlined),
-            label: 'المسائل',
-          ),
-          NavigationDestination(
-            selectedIcon: Icon(Icons.settings),
-            icon: Icon(Icons.settings_outlined),
-            label: 'الإعدادات',
-          ),
-        ],
-      ),
-    ));
+        ));
   }
 }
-
-
-
-
 
 class ParagraphPage extends StatefulWidget {
   const ParagraphPage({
@@ -317,7 +314,7 @@ class _ParagraphPageState extends State<ParagraphPage> {
 }
 
 class AddQuestionDialog extends StatefulWidget {
-  const AddQuestionDialog({super.key,  this.mosqueName});
+  const AddQuestionDialog({super.key, this.mosqueName});
 
   final String? mosqueName;
 
@@ -336,38 +333,44 @@ class _AddQuestionDialogState extends State<AddQuestionDialog> {
       textDirection: TextDirection.rtl,
       child: AlertDialog(
         title: const Text("إضافة مسألة"),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: questionController,
-              decoration: const InputDecoration(
-                hintText: "المسألة",
-              ),
-            ),
-            TextField(
-              controller: descriptionController,
-              minLines: 2,
-              maxLines: 4,
-              decoration: const InputDecoration(
-                hintText: "الوصف",
-              ),
-            ),
-            const SizedBox(height: 5),
-            CheckboxListTile(
-                title: const Text(
-                  "هل هذه خطبة؟",
-                  textDirection: TextDirection.rtl,
-                  textAlign: TextAlign.right,
-                  style: TextStyle(fontSize: 18),
+        content: SizedBox(
+          width: 400,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: questionController,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  hintText: "المسألة",
                 ),
-                value: isParagraph,
-                onChanged: (value) {
-                  setState(() {
-                    isParagraph = value!;
-                  });
-                })
-          ],
+              ),
+              const SizedBox(height: 10),
+              TextField(
+                controller: descriptionController,
+                minLines: 2,
+                maxLines: 4,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  hintText: "الوصف",
+                ),
+              ),
+              const SizedBox(height: 5),
+              CheckboxListTile(
+                  title: const Text(
+                    "هل هذه خطبة؟",
+                    textDirection: TextDirection.rtl,
+                    textAlign: TextAlign.right,
+                    style: TextStyle(fontSize: 18),
+                  ),
+                  value: isParagraph,
+                  onChanged: (value) {
+                    setState(() {
+                      isParagraph = value!;
+                    });
+                  })
+            ],
+          ),
         ),
         actions: [
           TextButton(
@@ -392,6 +395,95 @@ class _AddQuestionDialogState extends State<AddQuestionDialog> {
             child: const Text("إضافة"),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class AddQuestionPage extends StatefulWidget {
+  const AddQuestionPage({super.key, this.mosqueName});
+
+  final String? mosqueName;
+
+  @override
+  State<AddQuestionPage> createState() => _AddQuestionPageState();
+}
+
+class _AddQuestionPageState extends State<AddQuestionPage> {
+  final TextEditingController questionController = TextEditingController();
+  final TextEditingController descriptionController = TextEditingController();
+
+  bool isParagraph = false;
+  @override
+  Widget build(BuildContext context) {
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text("إضافة مسألة"),
+          centerTitle: true,
+          leading: IconButton(
+            icon: Icon(Icons.arrow_downward),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+          actions: [
+            IconButton(
+              onPressed: () {
+                if (questionController.text.isNotEmpty) {
+                  Box<Question> questionsBox = Hive.box<Question>('questions');
+                  questionsBox.add(Question(
+                      questionController.text,
+                      descriptionController.text,
+                      false,
+                      widget.mosqueName ?? "",
+                      isParagraph));
+                  Navigator.pop(context);
+                }
+              },
+              icon: const Icon(Icons.check),
+            ),
+          ],
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(10),
+          child: ListView(
+            children: [
+              TextField(
+                controller: questionController,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  hintText: "المسألة",
+                ),
+              ),
+              const SizedBox(height: 10),
+              TextField(
+                controller: descriptionController,
+                minLines: 2,
+                maxLines: 5,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  hintText: "الوصف",
+                ),
+              ),
+              const SizedBox(height: 5),
+              CheckboxListTile(
+                  title: const Text(
+                    "هل هذه خطبة؟",
+                    textDirection: TextDirection.rtl,
+                    textAlign: TextAlign.right,
+                    style: TextStyle(fontSize: 18),
+                  ),
+                  value: isParagraph,
+                  onChanged: (value) {
+                    setState(() {
+                      isParagraph = value!;
+                    });
+                  })
+            ],
+          ),
+        ),
       ),
     );
   }

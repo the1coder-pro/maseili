@@ -1,11 +1,9 @@
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:masel/mosque_model.dart';
 import 'package:masel/mosque_page.dart';
 import 'package:masel/question_model.dart';
-import 'package:masel/settings_page.dart';
 
 enum ViewType { gridView, listView }
 
@@ -27,6 +25,52 @@ class _MosquesPageState extends State<MosquesPage> {
     }
   }
 
+  void editMosque(int index, String newName) {
+    if (newName.isNotEmpty) {
+      Box<Mosque> mosquesBox = Hive.box<Mosque>('mosques');
+      Mosque? mosque = mosquesBox.getAt(index);
+      mosque!.name = newName;
+      mosque.save();
+      Navigator.pop(context);
+    }
+  }
+
+  void showEditDialog(BuildContext context, int index, String currentName) {
+    TextEditingController _controller =
+        TextEditingController(text: currentName);
+    showDialog(
+      context: context,
+      builder: (context) => Directionality(
+        textDirection: TextDirection.rtl,
+        child: AlertDialog(
+          title: const Text("تعديل اسم مسجد"),
+          content: TextField(
+            controller: _controller,
+            decoration: const InputDecoration(
+              border: OutlineInputBorder(),
+              hintText: "اسم المسجد",
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text("إلغاء"),
+            ),
+            OutlinedButton(
+              onPressed: () {
+                editMosque(index, _controller.text);
+                Navigator.of(context).pop();
+              },
+              child: const Text("تعديل"),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Set<ViewType> selected = {ViewType.gridView};
 
   @override
@@ -38,7 +82,6 @@ class _MosquesPageState extends State<MosquesPage> {
           backgroundColor: Theme.of(context).colorScheme.surface,
           title: const Text("المساجد"),
           centerTitle: true,
-
           actions: [
             Padding(
               padding: const EdgeInsets.only(left: 8, top: 8, bottom: 8),
@@ -51,7 +94,8 @@ class _MosquesPageState extends State<MosquesPage> {
                   showSelectedIcon: false,
                   segments: const [
                     ButtonSegment(
-                        icon: Center(
+                        icon: Padding(
+                          padding: EdgeInsets.only(bottom: 8),
                           child: Icon(
                             Icons.grid_view_outlined,
                             size: 20,
@@ -59,7 +103,8 @@ class _MosquesPageState extends State<MosquesPage> {
                         ),
                         value: ViewType.gridView),
                     ButtonSegment(
-                        icon: Center(
+                        icon: Padding(
+                          padding: EdgeInsets.only(bottom: 8),
                           child: Icon(
                             Icons.list_outlined,
                             size: 20,
@@ -77,7 +122,7 @@ class _MosquesPageState extends State<MosquesPage> {
             builder: (context, box, _) {
               var mosques = box.values.toList();
               if (mosques.isEmpty) {
-                return const Text("لا توجد مساجد.",
+                return const Text("لا توجد مساجد",
                     style: TextStyle(fontSize: 25));
               }
               return PageTransitionSwitcher(
@@ -96,33 +141,76 @@ class _MosquesPageState extends State<MosquesPage> {
                           separatorBuilder: (_, __) => const Divider(),
                           itemCount: mosques.length,
                           itemBuilder: (context, index) {
-                            return Card(
-                              color: Theme.of(context).colorScheme.surface,
-                              elevation: 0,
-                              child: ListTile(
-                                splashColor:
-                                    Theme.of(context).colorScheme.surface,
-                                trailing: const Icon(
-                                  Icons.arrow_back_outlined,
-                                  textDirection: TextDirection.ltr,
-                                ),
-                                title: Text(mosques[index].name,
-                                    style: TextStyle(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .onSecondaryContainer)),
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => MosquePage(
-                                          mosqueName: mosques[index].name),
+                            return GestureDetector(
+                              onLongPressStart:
+                                  (LongPressStartDetails details) {
+                                showMenu(
+                                  context: context,
+                                  position: RelativeRect.fromLTRB(
+                                    details.globalPosition.dx,
+                                    details.globalPosition.dy,
+                                    details.globalPosition.dx,
+                                    details.globalPosition.dy,
+                                  ),
+                                  items: [
+                                    PopupMenuItem<int>(
+                                      value: 0,
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Icon(Icons.edit_outlined),
+                                          Text("تعديل"),
+                                        ],
+                                      ),
                                     ),
-                                  );
-                                },
-                                onLongPress: () {
-                                  deleteMosque(context, mosques, index);
-                                },
+                                    PopupMenuItem<int>(
+                                      value: 1,
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Icon(Icons.delete_outline),
+                                          Text("حذف"),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ).then((value) {
+                                  if (value == 0) {
+                                    showEditDialog(
+                                        context, index, mosques[index].name);
+                                  } else if (value == 1) {
+                                    // Delete mosque
+                                    deleteAMosque(context, mosques, index);
+                                  }
+                                });
+                              },
+                              child: Card(
+                                color: Theme.of(context).colorScheme.surface,
+                                elevation: 0,
+                                child: ListTile(
+                                  splashColor:
+                                      Theme.of(context).colorScheme.surface,
+                                  trailing: const Icon(
+                                    Icons.arrow_back_outlined,
+                                    textDirection: TextDirection.ltr,
+                                  ),
+                                  title: Text(mosques[index].name,
+                                      style: TextStyle(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onSurface)),
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => MosquePage(
+                                            mosqueName: mosques[index].name),
+                                      ),
+                                    );
+                                  },
+                                ),
                               ),
                             );
                           },
@@ -134,55 +222,101 @@ class _MosquesPageState extends State<MosquesPage> {
                             crossAxisCount: 2,
                           ),
                           itemBuilder: (context, index) {
-                            return Card(
-                              color: Theme.of(context).colorScheme.surface,
-                              elevation: 0,
-                              child: GestureDetector(
-                                // onLongPress show dialog to delete mosque
-                                onLongPress: () {
-                                  deleteMosque(context, mosques, index);
-                                },
-                                onTap: () {
-                                  // open new scaffold with app the name of it is the opened mosque name
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => MosquePage(
-                                          mosqueName: mosques[index].name),
-                                    ),
-                                  );
-                                },
-                                child: Center(
-                                  child: Stack(
-                                    alignment: Alignment.center,
-                                    children: [
-                                      Icon(
-                                        Icons.folder,
-                                        size: 180,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .secondaryContainer,
+                            return GestureDetector(
+                              onLongPressStart:
+                                  (LongPressStartDetails details) {
+                                showMenu(
+                                  context: context,
+                                  position: RelativeRect.fromLTRB(
+                                    details.globalPosition.dx,
+                                    details.globalPosition.dy,
+                                    details.globalPosition.dx,
+                                    details.globalPosition.dy,
+                                  ),
+                                  items: [
+                                    PopupMenuItem<int>(
+                                      value: 0,
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Icon(Icons.edit_outlined),
+                                          Text("تعديل"),
+                                        ],
                                       ),
-                                      SizedBox(
-                                        width: 130,
-                                        height: 100,
-                                        child: Center(
-                                          child: Text(
-                                            mosques[index].name,
-                                            maxLines: 2,
-                                            softWrap: true,
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                              // overflow: TextOverflow.fade,
-                                              fontSize: 18,
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .onSecondaryContainer,
+                                    ),
+                                    PopupMenuItem<int>(
+                                      value: 1,
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Icon(Icons.delete_outline),
+                                          Text("حذف"),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ).then((value) {
+                                  if (value == 0) {
+                                    showEditDialog(
+                                        context, index, mosques[index].name);
+                                  } else if (value == 1) {
+                                    // Delete mosque
+                                    deleteAMosque(context, mosques, index);
+                                  }
+                                });
+                              },
+                              child: Card(
+                                color: Theme.of(context).colorScheme.surface,
+                                elevation: 0,
+                                child: GestureDetector(
+                                  onTap: () {
+                                    // open new scaffold with app the name of it is the opened mosque name
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => MosquePage(
+                                            mosqueName: mosques[index].name),
+                                      ),
+                                    );
+                                  },
+                                  child: Center(
+                                    child: Stack(
+                                      alignment: Alignment.center,
+                                      children: [
+                                        Icon(
+                                          Icons.folder,
+                                          size: 180,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .secondaryContainer,
+                                        ),
+                                        Padding(
+                                          padding:
+                                              const EdgeInsets.only(top: 20),
+                                          child: SizedBox(
+                                            width: 130,
+                                            height: 100,
+                                            child: Center(
+                                              child: Text(
+                                                mosques[index].name,
+                                                maxLines: 2,
+                                                softWrap: true,
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(
+                                                  // overflow: TextOverflow.fade,
+                                                  fontSize: 20,
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .onSecondaryContainer,
+                                                ),
+                                              ),
                                             ),
                                           ),
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),
@@ -217,7 +351,7 @@ class _MosquesPageState extends State<MosquesPage> {
                       },
                       child: const Text("إلغاء"),
                     ),
-                    FilledButton(
+                    OutlinedButton(
                       onPressed: addMosque,
                       child: const Text("إضافة"),
                     ),
@@ -233,45 +367,36 @@ class _MosquesPageState extends State<MosquesPage> {
     );
   }
 
-  Future<dynamic> deleteMosque(
+  Future<dynamic> deleteAMosque(
       BuildContext context, List<Mosque> mosques, int index) {
     return showDialog(
-      context: context,
-      builder: (context) {
-        return Directionality(
-          textDirection: TextDirection.rtl,
-          child: AlertDialog(
-            icon: const Icon(Icons.delete_outline),
-            iconColor: Theme.of(context).colorScheme.error,
-            title: const Text("حذف المسجد"),
-            content: const Text("هل أنت متأكد من حذف المسجد؟"),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: const Text("إلغاء"),
-              ),
-              FilledButton(
-                onPressed: () {
-                  mosques[index].delete();
-                  // delete all questions related to this mosque
-                  Hive.box<Question>('questions')
-                      .values
-                      .where((question) =>
-                          question.mosqueName == mosques[index].name)
-                      .toList()
-                      .forEach((question) {
-                    question.delete();
-                  });
-                  Navigator.pop(context);
-                },
-                child: const Text("حذف"),
-              ),
-            ],
-          ),
-        );
-      },
-    );
+        context: context,
+        builder: (context) {
+          return Directionality(
+            textDirection: TextDirection.rtl,
+            child: AlertDialog(
+              icon: const Icon(Icons.delete_outline),
+              iconColor: Theme.of(context).colorScheme.error,
+              title: const Text("حذف المسجد"),
+              content: Text("هل أنت متأكد من حذف '${mosques[index].name}'؟"),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Text("لا"),
+                ),
+                OutlinedButton(
+                  onPressed: () {
+                    Box<Mosque> mosquesBox = Hive.box<Mosque>('mosques');
+                    mosquesBox.deleteAt(index);
+                    Navigator.pop(context);
+                  },
+                  child: const Text("نعم"),
+                ),
+              ],
+            ),
+          );
+        });
   }
 }

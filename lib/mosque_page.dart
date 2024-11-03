@@ -173,7 +173,7 @@ class _MosquePageState extends State<MosquePage> {
                             .toList();
                         if (questions.isEmpty) {
                           return const Center(
-                            child: Text("لا توجد مسائل.",
+                            child: Text("لا توجد مسائل",
                                 style: TextStyle(fontSize: 25)),
                           );
                         }
@@ -364,8 +364,9 @@ class _MosquePageState extends State<MosquePage> {
             onPressed: () {
               showDialog(
                 context: context,
-                builder: (context) =>
-                    AddQuestionDialog(mosqueName: widget.mosqueName),
+                builder: (context) =>  AddQuestionDialog(
+                    mosqueName: widget.mosqueName
+                ),
               );
             },
             tooltip: 'إضافة مسألة',
@@ -374,64 +375,6 @@ class _MosquePageState extends State<MosquePage> {
     );
   }
 
-  Future<dynamic> editDialog(
-      BuildContext context, List<Question> questions, int index) {
-    return showDialog(
-      context: context,
-      builder: (context) {
-        final TextEditingController questionController =
-        TextEditingController();
-        final TextEditingController descriptionController =
-        TextEditingController();
-        questionController.text = questions[index].question;
-        descriptionController.text = questions[index].description ?? "";
-        return Directionality(
-          textDirection: TextDirection.rtl,
-          child: AlertDialog(
-            title: const Text("تعديل المسألة"),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextField(
-                  controller: questionController,
-                  decoration: const InputDecoration(
-                    hintText: "المسألة",
-                  ),
-                ),
-                TextField(
-                  controller: descriptionController,
-                  minLines: 4,
-                  maxLines: 10,
-                  decoration: const InputDecoration(
-                    hintText: "الوصف",
-                  ),
-                ),
-              ],
-            ),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: const Text("إلغاء"),
-              ),
-              FilledButton(
-                onPressed: () {
-                  if (questionController.text.isNotEmpty) {
-                    questions[index].question = questionController.text;
-                    questions[index].description = descriptionController.text;
-                    questions[index].save();
-                    Navigator.pop(context);
-                  }
-                },
-                child: const Text("حفظ"),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
 
   Future<dynamic> deleteDialog(
       BuildContext context, List<Question> questions, int index) {
@@ -465,4 +408,68 @@ class _MosquePageState extends State<MosquePage> {
       },
     );
   }
+}
+
+
+Future<dynamic> editDialog(
+    BuildContext context, List<Question> questions, int index) {
+  return showDialog(
+    context: context,
+    builder: (context) {
+      final TextEditingController questionController =
+      TextEditingController();
+      final TextEditingController descriptionController =
+      TextEditingController();
+      questionController.text = questions[index].question;
+      descriptionController.text = questions[index].description ?? "";
+      return Directionality(
+        textDirection: TextDirection.rtl,
+        child: AlertDialog(
+          title: const Text("تعديل المسألة"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: questionController,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  hintText: "المسألة",
+                ),
+              ),
+              const SizedBox(height: 10),
+              TextField(
+                controller: descriptionController,
+                minLines: 4,
+                maxLines: 10,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+
+                  hintText: "الوصف",
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text("إلغاء"),
+            ),
+            FilledButton(
+              onPressed: () {
+                if (questionController.text.isNotEmpty) {
+                  questions[index].question = questionController.text;
+                  questions[index].description = descriptionController.text;
+                  questions[index].save();
+                  Navigator.pop(context);
+                }
+              },
+              child: const Text("حفظ"),
+            ),
+          ],
+        ),
+      );
+    },
+  );
 }
