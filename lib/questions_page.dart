@@ -278,8 +278,6 @@ class _QuestionsPageState extends State<QuestionsPage> {
             floatingActionButton: FloatingActionButton(
               elevation: 3,
               onPressed: () {
-                // add a new question
-
                 showDialog(
                   context: context,
                   builder: (context) => const AddQuestionDialog(),

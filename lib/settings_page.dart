@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:masel/settings.dart';
 import 'package:provider/provider.dart';
 
+String applicationVersion = "0.0.1";
+
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
 
@@ -37,14 +39,28 @@ class _SettingsPageState extends State<SettingsPage> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(right: 20, bottom: 30),
+                padding: const EdgeInsets.only(right: 20, bottom: 5),
                 child: Align(
                   alignment: Alignment.bottomRight,
-                  child: Text("أحكام العلمين \nمسائل بين الفرضين",
+                  child: Text("أحكام العلمين \nلمسائل بين الفرضين",
                       style: TextStyle(
                           height: 0.9,
                           fontSize: 30,
                           fontFamily: "Lateef",
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onSurface
+                              .withOpacity(0.8))),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(right: 20, bottom: 10),
+                child: Align(
+                  alignment: Alignment.bottomRight,
+                  child: Text(applicationVersion,
+                      style: TextStyle(
+                          height: 0.9,
+                          fontSize: 10,
                           color: Theme.of(context)
                               .colorScheme
                               .onSurface

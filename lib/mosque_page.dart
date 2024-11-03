@@ -372,21 +372,65 @@ class _MosquePageState extends State<MosquePage> {
               ),
             ],
           )),
-          floatingActionButton:
-              pageMode == PageMode.select || pageMode == PageMode.delete
-                  ? Container()
-                  : FloatingActionButton(
-                      elevation: 3,
-                      onPressed: () {
-                        showDialog(
-                          context: context,
-                          builder: (context) =>
-                              AddQuestionDialog(mosqueName: widget.mosqueName),
-                        );
-                      },
-                      tooltip: 'إضافة مسألة',
-                      child: const Icon(Icons.add_comment_outlined),
-                    )),
+          floatingActionButton: pageMode == PageMode.select ||
+                  pageMode == PageMode.delete
+              ? Container()
+              : FloatingActionButton(
+                  elevation: 3,
+                  onPressed: () {
+                    showDialog(
+                        context: context,
+                        builder: (context) {
+                          return Dialog(
+                            child: Container(
+                              width: 400,
+                              height: 200,
+                              child: Center(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceAround,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      FilledButton(
+                                          onPressed: () {},
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Text("الاسئلة\nالعامة"),
+                                          )),
+                                      const SizedBox(width: 10),
+                                      FilledButton(
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                            showDialog(
+                                              context: context,
+                                              builder: (context) =>
+                                                  AddQuestionDialog(
+                                                      mosqueName:
+                                                          widget.mosqueName),
+                                            );
+                                          },
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Text("إضافة\nسؤال"),
+                                          )),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          );
+                        });
+                    // showDialog(
+                    //   context: context,
+                    //   builder: (context) =>
+                    //       AddQuestionDialog(mosqueName: widget.mosqueName),
+                    // );
+                  },
+                  tooltip: 'إضافة مسألة',
+                  child: const Icon(Icons.add_comment_outlined),
+                )),
     );
   }
 
