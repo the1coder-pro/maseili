@@ -22,4 +22,14 @@ class Question extends HiveObject {
 
   Question(this.question, this.description, this.answered, this.mosqueName,
       this.isParagraph);
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Question &&
+          runtimeType == other.runtimeType &&
+          question == other.question &&
+          description == other.description;
+  @override
+  int get hashCode => question.hashCode ^ description.hashCode;
 }

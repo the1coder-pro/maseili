@@ -2,6 +2,7 @@ import 'package:animations/animations.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:masel/main.dart';
 import 'package:masel/mosque_page.dart';
@@ -69,9 +70,12 @@ class _QuestionsPageState extends State<QuestionsPage> {
             ),
             body: ValueListenableBuilder<Box<Question>>(
               // show all questions in a list
+
               valueListenable: Hive.box<Question>('questions').listenable(),
               builder: (BuildContext context, value, _) {
-                final questions = value.values.toList();
+                var allQuestions = value.values.toList();
+                var questions = filterUniqueQuestions(allQuestions);
+                // filter questions to show unique questions only
                 if (questions.isEmpty) {
                   return const Center(
                     child: Text(
@@ -81,54 +85,39 @@ class _QuestionsPageState extends State<QuestionsPage> {
                   );
                 }
                 return PageTransitionSwitcher(
-                  transitionBuilder: (Widget child,
-                      Animation<double> primaryAnimation,
-                      Animation<double> secondaryAnimation) {
-                    return FadeThroughTransition(
-                      animation: primaryAnimation,
-                      secondaryAnimation: secondaryAnimation,
-                      child: child,
-                    );
-                  },
-                  child: selected.contains(QuestionsView.listView)
-                      ? Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Column(
-                            children: [
-                              // search bar
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: TextField(
-                                  controller: searchController,
-                                  onChanged: (value) {
-                                    themeProvider.searchQuery = value;
-                                  },
-                                  decoration: InputDecoration(
-                                      border: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(10)),
-                                      hintText: "ابحث عن سؤال",
-                                      suffixIcon: const Icon(Icons.search)),
+                    transitionBuilder: (Widget child,
+                        Animation<double> primaryAnimation,
+                        Animation<double> secondaryAnimation) {
+                      return FadeThroughTransition(
+                        animation: primaryAnimation,
+                        secondaryAnimation: secondaryAnimation,
+                        child: child,
+                      );
+                    },
+                    child: selected.contains(QuestionsView.listView)
+                        ? Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              children: [
+                                // search bar
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: TextField(
+                                    controller: searchController,
+                                    onChanged: (value) {
+                                      themeProvider.searchQuery = value;
+                                    },
+                                    decoration: InputDecoration(
+                                        border: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(10)),
+                                        hintText: "ابحث عن سؤال",
+                                        suffixIcon: const Icon(Icons.search)),
+                                  ),
                                 ),
-                              ),
-                              Expanded(
-                                child: ListView.builder(
-                                  itemCount: questions
-                                      .where((element) =>
-                                          element.question.contains(
-                                              themeProvider.searchQuery) ||
-                                          element.description!.contains(
-                                              themeProvider.searchQuery) ||
-                                          element.mosqueName.contains(
-                                              themeProvider.searchQuery) ||
-                                          element.answered.toString().contains(
-                                              themeProvider
-                                                  .searchQuery) // if nothing show all
-                                          ||
-                                          themeProvider.searchQuery.isEmpty)
-                                      .length,
-                                  itemBuilder: (context, index) {
-                                    final question = questions
+                                Expanded(
+                                  child: ListView.builder(
+                                    itemCount: questions
                                         .where((element) =>
                                             element.question.contains(
                                                 themeProvider.searchQuery) ||
@@ -142,137 +131,124 @@ class _QuestionsPageState extends State<QuestionsPage> {
                                                     .searchQuery) // if nothing show all
                                             ||
                                             themeProvider.searchQuery.isEmpty)
-                                        .toList()[index];
+                                        .length,
+                                    itemBuilder: (context, index) {
+                                      final question = questions
+                                          .where((element) =>
+                                              element.question.contains(
+                                                  themeProvider.searchQuery) ||
+                                              element.description!.contains(
+                                                  themeProvider.searchQuery) ||
+                                              element.mosqueName.contains(
+                                                  themeProvider.searchQuery) ||
+                                              element.answered
+                                                  .toString()
+                                                  .contains(themeProvider
+                                                      .searchQuery) // if nothing show all
+                                              ||
+                                              themeProvider.searchQuery.isEmpty)
+                                          .toList()[index];
 
-                                    return GestureDetector(
-                                      onLongPressStart:
-                                          (LongPressStartDetails details) {
-                                        showMenu(
-                                          context: context,
-                                          position: RelativeRect.fromLTRB(
-                                            details.globalPosition.dx,
-                                            details.globalPosition.dy,
-                                            details.globalPosition.dx,
-                                            details.globalPosition.dy,
-                                          ),
-                                          items: [
-                                            PopupMenuItem<int>(
-                                              value: 0,
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  Icon(Icons.edit_outlined),
-                                                  Text("تعديل"),
-                                                ],
+                                      return GestureDetector(
+                                        onLongPressStart:
+                                            (LongPressStartDetails details) {
+                                          showMenu(
+                                            context: context,
+                                            position: RelativeRect.fromLTRB(
+                                              details.globalPosition.dx,
+                                              details.globalPosition.dy,
+                                              details.globalPosition.dx,
+                                              details.globalPosition.dy,
+                                            ),
+                                            items: [
+                                              PopupMenuItem<int>(
+                                                value: 0,
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    Icon(Icons.edit_outlined),
+                                                    Text("تعديل"),
+                                                  ],
+                                                ),
                                               ),
-                                            ),
-                                            PopupMenuItem<int>(
-                                              value: 1,
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  Icon(Icons.delete_outline),
-                                                  Text("حذف"),
-                                                ],
+                                              PopupMenuItem<int>(
+                                                value: 1,
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    Icon(Icons.delete_outline),
+                                                    Text("حذف"),
+                                                  ],
+                                                ),
                                               ),
+                                            ],
+                                          ).then((value) {
+                                            if (value == 0) {
+                                              editDialog(
+                                                  context, questions, index);
+                                            } else if (value == 1) {
+                                              // Delete mosque
+                                              deleteAQuestion(
+                                                  context, questions, index);
+                                            }
+                                          });
+                                        },
+                                        child: Card.filled(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .secondaryContainer,
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              border: Border.all(
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .onSecondaryContainer),
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
                                             ),
-                                          ],
-                                        ).then((value) {
-                                          if (value == 0) {
-                                            editDialog(
-                                                context, questions, index);
-                                          } else if (value == 1) {
-                                            // Delete mosque
-                                            deleteAQuestion(
-                                                context, questions, index);
-                                          }
-                                        });
-                                      },
-                                      child: Card.filled(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .secondaryContainer,
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            border: Border.all(
-                                                color: Theme.of(context)
-                                                    .colorScheme
-                                                    .onSecondaryContainer),
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                          ),
-                                          child: ListTile(
-                                            title: Padding(
-                                              padding:
-                                                  const EdgeInsets.all(8.0),
-                                              child: Text(question.question,
-                                                  style: TextStyle(
-                                                      color: Theme.of(context)
-                                                          .colorScheme
-                                                          .onPrimaryContainer,
-                                                      fontFamily:
-                                                          "Scheherazade",
-                                                      letterSpacing: 0)),
+                                            child: ListTile(
+                                              title: Padding(
+                                                padding:
+                                                    const EdgeInsets.all(8.0),
+                                                child: Text(question.question,
+                                                    style: TextStyle(
+                                                        color: Theme.of(context)
+                                                            .colorScheme
+                                                            .onPrimaryContainer,
+                                                        fontFamily:
+                                                            "Scheherazade",
+                                                        letterSpacing: 0)),
+                                              ),
+                                              onTap: () {
+                                                Navigator.push(context,
+                                                    MaterialPageRoute(
+                                                        builder: (context) {
+                                                  return QuestionView(
+                                                      index: index,
+                                                      carouselController:
+                                                          carouselController,
+                                                      questions: questions);
+                                                }));
+                                              },
                                             ),
-                                            onTap: () {
-                                              Navigator.push(context,
-                                                  MaterialPageRoute(
-                                                      builder: (context) {
-                                                return QuestionView(
-                                                    index: index,
-                                                    carouselController:
-                                                        carouselController,
-                                                    questions: questions);
-                                              }));
-                                            },
                                           ),
                                         ),
-                                      ),
-                                    );
-                                  },
+                                      );
+                                    },
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
-                        )
-                      : ListView(
-                          children: [
-                            SingleChildScrollView(
-                              scrollDirection: Axis.horizontal,
-                              child: DataTable(
-                                // columns (question, description, mosque)
-                                columns: const [
-                                  DataColumn(label: Text("السؤال")),
-                                  DataColumn(label: Text("الوصف")),
-                                  DataColumn(label: Text("المسجد")),
-                                  DataColumn(label: Text("مشروحة"))
-                                ],
-                                rows: questions
-                                    .map((question) => DataRow(cells: [
-                                          DataCell(Text(question.question)),
-                                          DataCell(SizedBox(
-                                              width: 300,
-                                              child:
-                                                  Text(question.description!))),
-                                          DataCell(Text(question.mosqueName)),
-                                          DataCell(Icon(
-                                              question.answered
-                                                  ? Icons.check_circle
-                                                  : Icons.cancel,
-                                              color: question.answered
-                                                  ? Colors.green
-                                                  : Colors.red))
-                                        ]))
-                                    .toList(),
-                              ),
+                              ],
                             ),
-                          ],
-                        ),
-                );
+                          )
+                        : ListView(
+                            children: [
+                              MyTable(allQuestions: allQuestions),
+                            ],
+                          ));
               },
             ),
             floatingActionButton: FloatingActionButton(
@@ -321,6 +297,16 @@ class _QuestionsPageState extends State<QuestionsPage> {
           );
         });
   }
+}
+
+List<Question> filterUniqueQuestions(List<Question> questions) {
+  final uniqueQuestions = <Question>{};
+
+  for (var question in questions) {
+    uniqueQuestions.add(question);
+  }
+
+  return uniqueQuestions.toList();
 }
 
 class QuestionView extends StatelessWidget {
@@ -467,6 +453,105 @@ class QuestionView extends StatelessWidget {
                     ]),
               ),
             const SizedBox(height: 20)
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+List<Map<String, dynamic>> groupQuestions(List<Question> questions) {
+  Map<String, Map<String, dynamic>> groupedQuestions = {};
+
+  for (var question in questions) {
+    String key = '${question.question}_${question.description}';
+
+    if (!groupedQuestions.containsKey(key)) {
+      groupedQuestions[key] = {
+        'question': question.question,
+        'description': question.description,
+        'mosques': []
+      };
+    }
+    // don't add empty mosques
+    if (question.mosqueName.isNotEmpty) {
+      groupedQuestions[key]!['mosques'].add(
+          {'mosqueName': question.mosqueName, 'answered': question.answered});
+    }
+  }
+
+  return groupedQuestions.values.toList();
+}
+
+class MyTable extends StatelessWidget {
+  final List<Question> allQuestions;
+
+  MyTable({required this.allQuestions});
+
+  @override
+  Widget build(BuildContext context) {
+    List<Map<String, dynamic>> groupedQuestions = groupQuestions(allQuestions);
+
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: SizedBox(
+        width: 550,
+        child: Table(
+          columnWidths: {
+            0: FlexColumnWidth(6),
+            1: FlexColumnWidth(10),
+            2: FlexColumnWidth(10),
+          },
+          border: TableBorder.all(),
+          children: [
+            TableRow(
+              decoration: BoxDecoration(color: Theme.of(context).primaryColor),
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text('المسألة', style: TextStyle(color: Colors.white)),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text('الوصف', style: TextStyle(color: Colors.white)),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text('المساجد', style: TextStyle(color: Colors.white)),
+                ),
+              ],
+            ),
+            ...groupedQuestions.map((question) {
+              return TableRow(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(question['question']),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(question['description']),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: question['mosques'].map<Widget>((mosque) {
+                        return Row(
+                          children: [
+                            Text(" - " + mosque['mosqueName']),
+                            SizedBox(width: 5),
+                            Icon(
+                              mosque['answered'] ? Icons.check : Icons.close,
+                            ),
+                          ],
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                ],
+              );
+            }).toList(),
           ],
         ),
       ),

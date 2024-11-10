@@ -22,19 +22,26 @@ void main() async {
 }
 
 const textTheme = TextTheme(
-  displayLarge: TextStyle(fontFamily: "Lateef", fontSize: 151),
-  displayMedium: TextStyle(fontFamily: "Lateef", fontSize: 94),
-  displaySmall: TextStyle(fontFamily: "Lateef", fontSize: 76),
-  headlineMedium: TextStyle(fontFamily: "Lateef", fontSize: 54),
-  headlineSmall: TextStyle(fontFamily: "Lateef", fontSize: 38),
-  titleLarge: TextStyle(fontFamily: "Lateef", fontSize: 31),
-  titleMedium: TextStyle(fontFamily: "Lateef", fontSize: 25),
-  titleSmall: TextStyle(fontFamily: "Lateef", fontSize: 22),
-  bodyLarge: TextStyle(fontFamily: "Vazirmatn", fontSize: 23),
-  bodyMedium: TextStyle(fontFamily: "Vazirmatn", fontSize: 21),
-  labelLarge: TextStyle(fontFamily: "Vazirmatn", fontSize: 21),
-  bodySmall: TextStyle(fontFamily: "Vazirmatn", fontSize: 18),
-  labelSmall: TextStyle(fontFamily: "Vazirmatn", fontSize: 15),
+  displayLarge:
+      TextStyle(fontFamily: "Lateef", fontSize: 151, letterSpacing: 0),
+  displayMedium:
+      TextStyle(fontFamily: "Lateef", fontSize: 94, letterSpacing: 0),
+  displaySmall: TextStyle(fontFamily: "Lateef", fontSize: 76, letterSpacing: 0),
+  headlineMedium:
+      TextStyle(fontFamily: "Lateef", fontSize: 54, letterSpacing: 0),
+  headlineSmall:
+      TextStyle(fontFamily: "Lateef", fontSize: 38, letterSpacing: 0),
+  titleLarge: TextStyle(fontFamily: "Lateef", fontSize: 31, letterSpacing: 0),
+  titleMedium: TextStyle(fontFamily: "Lateef", fontSize: 25, letterSpacing: 0),
+  titleSmall: TextStyle(fontFamily: "Lateef", fontSize: 22, letterSpacing: 0),
+  bodyLarge: TextStyle(fontFamily: "Vazirmatn", fontSize: 23, letterSpacing: 0),
+  bodyMedium:
+      TextStyle(fontFamily: "Vazirmatn", fontSize: 21, letterSpacing: 0),
+  labelLarge:
+      TextStyle(fontFamily: "Vazirmatn", fontSize: 21, letterSpacing: 0),
+  bodySmall: TextStyle(fontFamily: "Vazirmatn", fontSize: 18, letterSpacing: 0),
+  labelSmall:
+      TextStyle(fontFamily: "Vazirmatn", fontSize: 15, letterSpacing: 0),
 );
 
 class MyApp extends StatefulWidget {

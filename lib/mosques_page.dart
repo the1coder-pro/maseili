@@ -304,6 +304,7 @@ class _MosquesPageState extends State<MosquesPage> {
                                                 softWrap: true,
                                                 textAlign: TextAlign.center,
                                                 style: TextStyle(
+                                                  letterSpacing: 0,
                                                   // overflow: TextOverflow.fade,
                                                   fontSize: 20,
                                                   color: Theme.of(context)
