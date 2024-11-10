@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:masel/add_questions_page.dart';
 import 'package:masel/main.dart';
+import 'package:masel/paragraph_page.dart';
 import 'package:masel/question_model.dart';
 import 'package:masel/questions_page.dart';
 import 'package:masel/settings.dart';
@@ -310,6 +312,7 @@ class _MosquePageState extends State<MosquePage> {
                                 title: const Text("تم شرحه"),
                                 onChanged: (value) {
                                   questions[index].answered = value!;
+                                  
                                   questions[index].save();
                                 },
                                 secondary: PopupMenuButton(
@@ -356,7 +359,12 @@ class _MosquePageState extends State<MosquePage> {
                                               CopyToMultipleMosquesDialog(
                                                   question: questions[index]));
                                     } else if (value == 1) {
-                                      editDialog(context, questions, index);
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  EditQuestionPage(context,
+                                                      questions, index)));
                                     } else if (value == 2) {
                                       deleteDialog(context, questions, index);
                                     }
@@ -382,157 +390,7 @@ class _MosquePageState extends State<MosquePage> {
                         showDialog(
                             context: context,
                             builder: (context) {
-                              return Dialog(
-                                shape: RoundedRectangleBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(10))),
-                                child: SizedBox(
-                                  width: 350,
-                                  height: 200,
-                                  child: Center(
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(10),
-                                      child: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Expanded(
-                                            child: FilledButton.tonal(
-                                                style: ButtonStyle(
-                                                    shape: WidgetStatePropertyAll(
-                                                        RoundedRectangleBorder(
-                                                            borderRadius:
-                                                                BorderRadius.all(
-                                                                    Radius.circular(
-                                                                        10))))),
-                                                onPressed: () {
-                                                  Navigator.pop(context);
-                                                  var questionsList =
-                                                      Hive.box<Question>(
-                                                              'questions')
-                                                          .values
-                                                          .toList();
-                                                  showDialog(
-                                                      context: context,
-                                                      builder:
-                                                          (context) =>
-                                                              Directionality(
-                                                                textDirection: TextDirection.rtl,
-                                                                child: AlertDialog(
-                                                                  title: Text(
-                                                                      "إستيراد سؤال"),
-                                                                  content:
-                                                                      DropdownButton(
-                                                                    onChanged:
-                                                                        (value) {
-                                                                      // add question to this mosque
-                                                                      Question
-                                                                          question =
-                                                                          value
-                                                                              as Question;
-                                                                      // add the question to the mosque questions as new question
-                                                                
-                                                                      Question newQuestion = Question(
-                                                                          question
-                                                                              .question,
-                                                                          question
-                                                                              .description,
-                                                                          question
-                                                                              .answered,
-                                                                          widget
-                                                                              .mosqueName,
-                                                                          question
-                                                                              .isParagraph);
-                                                                      // add the question to the mosque questions as new question
-                                                                      Box<Question>
-                                                                          questionsBox =
-                                                                          Hive.box<Question>(
-                                                                              'questions');
-                                                                      questionsBox
-                                                                          .add(
-                                                                              newQuestion);
-                                                                      Navigator.pop(
-                                                                          context);
-                                                                
-                                                                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                                                                          duration: const Duration(
-                                                                              seconds:
-                                                                                  2),
-                                                                          content:
-                                                                              Text("تم إضافة المسألة")));
-                                                                    },
-                                                                    // retrieve questions from questions page to add to this mosque
-                                                                    items: filterUniqueQuestions(
-                                                                            questionsList)
-                                                                        .map(
-                                                                            (question) {
-                                                                      return DropdownMenuItem(
-                                                                        value:
-                                                                            question,
-                                                                        child: Text(
-                                                                            question
-                                                                                .question),
-                                                                      );
-                                                                    }).toList(),
-                                                                  ),
-                                                                ),
-                                                              ));
-                                                },
-                                                child: Padding(
-                                                  padding:
-                                                      const EdgeInsets.all(20),
-                                                  child: Column(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .spaceAround,
-                                                    children: [
-                                                      Icon(Icons
-                                                          .add_comment_outlined),
-                                                      Text("الاسئلة\nالعامة"),
-                                                    ],
-                                                  ),
-                                                )),
-                                          ),
-                                          const SizedBox(width: 5),
-                                          Expanded(
-                                            child: FilledButton.tonal(
-                                                style: ButtonStyle(
-                                                    shape: WidgetStatePropertyAll(
-                                                        RoundedRectangleBorder(
-                                                            borderRadius:
-                                                                BorderRadius.all(
-                                                                    Radius.circular(
-                                                                        10))))),
-                                                onPressed: () {
-                                                  Navigator.pop(context);
-                                                  showDialog(
-                                                    context: context,
-                                                    builder: (context) =>
-                                                        AddQuestionDialog(
-                                                            mosqueName: widget
-                                                                .mosqueName),
-                                                  );
-                                                },
-                                                child: Padding(
-                                                  padding:
-                                                      const EdgeInsets.all(20),
-                                                  child: Column(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .spaceAround,
-                                                    children: [
-                                                      Icon(Icons
-                                                          .new_releases_outlined),
-                                                      Text("إضافة\nسؤال"),
-                                                    ],
-                                                  ),
-                                                )),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              );
+                              return AddingQuestionsDialog(widget: widget);
                             });
                       },
                       tooltip: 'إضافة مسألة',
@@ -606,6 +464,211 @@ class _MosquePageState extends State<MosquePage> {
           ),
         );
       },
+    );
+  }
+}
+
+class AddingQuestionsDialog extends StatefulWidget {
+  const AddingQuestionsDialog({
+    super.key,
+    required this.widget,
+  });
+
+  final MosquePage widget;
+
+  @override
+  State<AddingQuestionsDialog> createState() => _AddingQuestionsDialogState();
+}
+
+class _AddingQuestionsDialogState extends State<AddingQuestionsDialog> {
+  Question? selectedQuestion;
+
+  @override
+  Widget build(BuildContext context) {
+    final questionsBox = Hive.box<Question>('questions');
+    return Dialog(
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(10))),
+      child: SizedBox(
+        width: 350,
+        height: 200,
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(10),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Expanded(
+                  child: FilledButton.tonal(
+                      style: ButtonStyle(
+                          shape: WidgetStatePropertyAll(RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(10))))),
+                      onPressed: () {
+                        Navigator.pop(context);
+                        var questionsList =
+                            Hive.box<Question>('questions').values.toList();
+                        showDialog(
+                            context: context,
+                            builder: (context) {
+                              return Directionality(
+                                textDirection: TextDirection.rtl,
+                                child: (filterUniqueQuestions(
+                                            questionsBox.values.toList())
+                                        .where((question) {
+                                  // if question.question is in the mosque questions
+                                  return questionsList
+                                          .where((element) =>
+                                              element.mosqueName ==
+                                              widget.widget.mosqueName)
+                                          .map((e) => e.question)
+                                          .contains(question.question) ==
+                                      false;
+                                }).isEmpty)
+                                    ? AlertDialog(
+                                        title: Text("إستيراد سؤال"),
+                                        content: Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Text(
+                                            "* لا توجد مسائل لإضافتها",
+                                            style: TextStyle(
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .error),
+                                          ),
+                                        ),
+                                        actions: [
+                                          FilledButton(
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                            },
+                                            child: const Text("حسنا"),
+                                          ),
+                                        ],
+                                      )
+                                    : AlertDialog(
+                                        title: Text("إستيراد سؤال"),
+                                        content: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            DropdownButtonFormField(
+                                              decoration: InputDecoration(
+                                                  border: OutlineInputBorder()),
+
+                                              onChanged: (value) {
+                                                // add question to this mosque
+                                                Question question =
+                                                    value as Question;
+                                                // add the question to the mosque questions as new question
+
+                                                selectedQuestion = Question(
+                                                    question.question,
+                                                    question.description,
+                                                    question.answered,
+                                                    widget.widget.mosqueName,
+                                                    question.isParagraph);
+                                              },
+                                              // retrieve questions from questions page to add to this mosque
+                                              items: filterUniqueQuestions(
+                                                      questionsList)
+                                                  // remove the questions that are already in the mosque
+                                                  .where((question) {
+                                                // if question.question is in the mosque questions
+                                                return questionsList
+                                                        .where((element) =>
+                                                            element
+                                                                .mosqueName ==
+                                                            widget.widget
+                                                                .mosqueName)
+                                                        .map((e) => e.question)
+                                                        .contains(question
+                                                            .question) ==
+                                                    false;
+                                              }).map((question) {
+                                                return DropdownMenuItem(
+                                                  alignment: Alignment.center,
+                                                  value: question,
+                                                  child: Text(
+                                                    question.question,
+                                                    style: TextStyle(
+                                                        fontSize: 20,
+                                                        fontFamily: "Rubik"),
+                                                  ),
+                                                );
+                                              }).toList(),
+                                            ),
+                                          ],
+                                        ),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                            },
+                                            child: const Text("إلغاء"),
+                                          ),
+                                          FilledButton(
+                                            onPressed: () {
+                                              questionsBox
+                                                  .add(selectedQuestion!);
+                                              Navigator.pop(context);
+
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(SnackBar(
+                                                      duration: const Duration(
+                                                          seconds: 2),
+                                                      content: Text(
+                                                          "تم إضافة المسألة")));
+                                            },
+                                            child: const Text("إضافة"),
+                                          ),
+                                        ],
+                                      ),
+                              );
+                            });
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            Icon(Icons.add_comment_outlined),
+                            Text("الاسئلة\nالعامة"),
+                          ],
+                        ),
+                      )),
+                ),
+                const SizedBox(width: 5),
+                Expanded(
+                  child: FilledButton.tonal(
+                      style: ButtonStyle(
+                          shape: WidgetStatePropertyAll(RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(10))))),
+                      onPressed: () {
+                        Navigator.pop(context);
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (context) {
+                          return AddQuestionPage(
+                            mosqueName: widget.widget.mosqueName,
+                          );
+                        }));
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            Icon(Icons.new_releases_outlined),
+                            Text("إضافة\nسؤال"),
+                          ],
+                        ),
+                      )),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

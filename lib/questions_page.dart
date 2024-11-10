@@ -2,9 +2,8 @@ import 'package:animations/animations.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:masel/main.dart';
+import 'package:masel/add_questions_page.dart';
 import 'package:masel/mosque_page.dart';
 import 'package:masel/question_model.dart';
 import 'package:masel/settings.dart';
@@ -246,7 +245,10 @@ class _QuestionsPageState extends State<QuestionsPage> {
                           )
                         : ListView(
                             children: [
-                              MyTable(allQuestions: allQuestions),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: MyTable(allQuestions: allQuestions),
+                              ),
                             ],
                           ));
               },
@@ -254,10 +256,9 @@ class _QuestionsPageState extends State<QuestionsPage> {
             floatingActionButton: FloatingActionButton(
               elevation: 3,
               onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (context) => const AddQuestionDialog(),
-                );
+                Navigator.push(context, MaterialPageRoute(builder: (context) {
+                  return AddQuestionPage();
+                }));
               },
               child: const Icon(Icons.add),
             )));
@@ -470,7 +471,8 @@ List<Map<String, dynamic>> groupQuestions(List<Question> questions) {
       groupedQuestions[key] = {
         'question': question.question,
         'description': question.description,
-        'mosques': []
+        'mosques': [],
+        'isParagraph': question.isParagraph
       };
     }
     // don't add empty mosques
@@ -495,42 +497,90 @@ class MyTable extends StatelessWidget {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: SizedBox(
-        width: 550,
+        width: 780,
         child: Table(
           columnWidths: {
             0: FlexColumnWidth(6),
-            1: FlexColumnWidth(10),
+            1: FlexColumnWidth(8),
             2: FlexColumnWidth(10),
+            3: FlexColumnWidth(4),
           },
-          border: TableBorder.all(),
+          border: TableBorder.all(
+              borderRadius: BorderRadius.circular(10),
+              color: Theme.of(context).colorScheme.onSurface),
           children: [
             TableRow(
-              decoration: BoxDecoration(color: Theme.of(context).primaryColor),
+              decoration: BoxDecoration(
+                  // only border radius of top left and right
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(10),
+                      topRight: Radius.circular(10)),
+                  color: Theme.of(context).colorScheme.primaryContainer),
               children: [
                 Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Text('المسألة', style: TextStyle(color: Colors.white)),
+                  child: Text('المسألة',
+                      style: TextStyle(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onPrimaryContainer)),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Text('الوصف', style: TextStyle(color: Colors.white)),
+                  child: Text('الوصف',
+                      style: TextStyle(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onPrimaryContainer)),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Text('المساجد', style: TextStyle(color: Colors.white)),
+                  child: Text('المساجد',
+                      style: TextStyle(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onPrimaryContainer)),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text('النوع',
+                      style: TextStyle(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onPrimaryContainer)),
                 ),
               ],
             ),
             ...groupedQuestions.map((question) {
               return TableRow(
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(question['question']),
+                  TableRowInkWell(
+                    onTap: () {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
+                        return QuestionView(
+                            index: allQuestions.indexWhere((element) =>
+                                element.question == question['question'] &&
+                                element.description == question['description']),
+                            carouselController: CarouselSliderController(),
+                            questions: allQuestions);
+                      }));
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(question['question'],
+                          style: TextStyle(
+                              color: Theme.of(context).colorScheme.onSurface)),
+                    ),
                   ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Text(question['description']),
+                    child: Text(
+                      question['description'],
+                      style: TextStyle(
+                          overflow: TextOverflow.ellipsis,
+                          color: Theme.of(context).colorScheme.onSurface),
+                    ),
                   ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -539,7 +589,12 @@ class MyTable extends StatelessWidget {
                       children: question['mosques'].map<Widget>((mosque) {
                         return Row(
                           children: [
-                            Text(" - " + mosque['mosqueName']),
+                            Text(
+                              " - ${mosque['mosqueName']}",
+                              style: TextStyle(
+                                  color:
+                                      Theme.of(context).colorScheme.onSurface),
+                            ),
                             SizedBox(width: 5),
                             Icon(
                               mosque['answered'] ? Icons.check : Icons.close,
@@ -547,6 +602,14 @@ class MyTable extends StatelessWidget {
                           ],
                         );
                       }).toList(),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      question['isParagraph'] ? "خطبة" : "مسألة",
+                      style: TextStyle(
+                          color: Theme.of(context).colorScheme.onSurface),
                     ),
                   ),
                 ],
