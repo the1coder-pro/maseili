@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:masel/main.dart';
-import 'package:masel/question_model.dart';
+import 'package:masel/dialogs/copy_to_multiple_mosques_dialog.dart';
+import 'package:masel/models/question_model.dart';
 
 class ParagraphPage extends StatefulWidget {
   const ParagraphPage({

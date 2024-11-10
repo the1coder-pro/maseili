@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-import 'package:masel/settings.dart';
+import 'package:masel/components/settings.dart';
 import 'package:provider/provider.dart';
 
-String applicationVersion = "0.0.1";
+String applicationVersion = "0.0.3";
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -30,7 +30,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 child: ListView(
                   children: [
                     SwitchListTile(
-                        title: const Text("الوضع الليلي"),
+                        title: const Text("الوضع الداكن"),
                         value: themeMode.darkTheme,
                         onChanged: (value) {
                           themeMode.darkTheme = value;

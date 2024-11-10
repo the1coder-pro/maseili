@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:masel/question_model.dart';
+import 'package:masel/models/question_model.dart';
 
 class AddQuestionPage extends StatefulWidget {
   const AddQuestionPage({super.key, this.mosqueName});

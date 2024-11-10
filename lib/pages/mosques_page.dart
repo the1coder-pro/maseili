@@ -1,8 +1,10 @@
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:masel/mosque_model.dart';
-import 'package:masel/mosque_page.dart';
+import 'package:masel/dialogs/delete_mosque_dialog.dart';
+import 'package:masel/dialogs/edit_mosque_dialog.dart';
+import 'package:masel/models/mosque_model.dart';
+import 'package:masel/pages/mosque_page.dart';
 
 enum ViewType { gridView, listView }
 
@@ -22,52 +24,6 @@ class _MosquesPageState extends State<MosquesPage> {
       mosquesBox.add(Mosque(controller.text));
       Navigator.pop(context);
     }
-  }
-
-  void editMosque(int index, String newName) {
-    if (newName.isNotEmpty) {
-      Box<Mosque> mosquesBox = Hive.box<Mosque>('mosques');
-      Mosque? mosque = mosquesBox.getAt(index);
-      mosque!.name = newName;
-      mosque.save();
-      Navigator.pop(context);
-    }
-  }
-
-  void showEditDialog(BuildContext context, int index, String currentName) {
-    TextEditingController _controller =
-        TextEditingController(text: currentName);
-    showDialog(
-      context: context,
-      builder: (context) => Directionality(
-        textDirection: TextDirection.rtl,
-        child: AlertDialog(
-          title: const Text("تعديل اسم مسجد"),
-          content: TextField(
-            controller: _controller,
-            decoration: const InputDecoration(
-              border: OutlineInputBorder(),
-              hintText: "اسم المسجد",
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: const Text("إلغاء"),
-            ),
-            FilledButton(
-              onPressed: () {
-                editMosque(index, _controller.text);
-                Navigator.of(context).pop();
-              },
-              child: const Text("حفظ"),
-            ),
-          ],
-        ),
-      ),
-    );
   }
 
   Set<ViewType> selected = {ViewType.gridView};
@@ -177,11 +133,11 @@ class _MosquesPageState extends State<MosquesPage> {
                                   ],
                                 ).then((value) {
                                   if (value == 0) {
-                                    showEditDialog(
+                                    showEditMosqueDialog(
                                         context, index, mosques[index].name);
                                   } else if (value == 1) {
                                     // Delete mosque
-                                    deleteAMosque(context, mosques, index);
+                                    deleteMosque(context, mosques, index);
                                   }
                                 });
                               },
@@ -258,11 +214,11 @@ class _MosquesPageState extends State<MosquesPage> {
                                   ],
                                 ).then((value) {
                                   if (value == 0) {
-                                    showEditDialog(
+                                    showEditMosqueDialog(
                                         context, index, mosques[index].name);
                                   } else if (value == 1) {
                                     // Delete mosque
-                                    deleteAMosque(context, mosques, index);
+                                    deleteMosque(context, mosques, index);
                                   }
                                 });
                               },
@@ -365,38 +321,5 @@ class _MosquesPageState extends State<MosquesPage> {
         ),
       ),
     );
-  }
-
-  Future<dynamic> deleteAMosque(
-      BuildContext context, List<Mosque> mosques, int index) {
-    return showDialog(
-        context: context,
-        builder: (context) {
-          return Directionality(
-            textDirection: TextDirection.rtl,
-            child: AlertDialog(
-              icon: const Icon(Icons.delete_outline),
-              iconColor: Theme.of(context).colorScheme.error,
-              title: const Text("حذف المسجد"),
-              content: Text("هل أنت متأكد من حذف '${mosques[index].name}'؟"),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: const Text("لا"),
-                ),
-                FilledButton(
-                  onPressed: () {
-                    Box<Mosque> mosquesBox = Hive.box<Mosque>('mosques');
-                    mosquesBox.deleteAt(index);
-                    Navigator.pop(context);
-                  },
-                  child: const Text("نعم"),
-                ),
-              ],
-            ),
-          );
-        });
   }
 }

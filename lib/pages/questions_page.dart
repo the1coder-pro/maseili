@@ -1,12 +1,13 @@
 import 'package:animations/animations.dart';
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:masel/add_questions_page.dart';
-import 'package:masel/mosque_page.dart';
-import 'package:masel/question_model.dart';
-import 'package:masel/settings.dart';
+import 'package:masel/pages/add_questions_page.dart';
+import 'package:masel/dialogs/delete_dialog.dart';
+import 'package:masel/components/helper_functions.dart';
+import 'package:masel/components/question_view.dart';
+import 'package:masel/models/question_model.dart';
+import 'package:masel/components/settings.dart';
 import 'package:provider/provider.dart';
 
 enum QuestionsView { tableView, listView }
@@ -48,20 +49,20 @@ class _QuestionsPageState extends State<QuestionsPage> {
                             icon: Padding(
                               padding: EdgeInsets.only(bottom: 8),
                               child: Icon(
-                                Icons.table_chart_outlined,
-                                size: 20,
-                              ),
-                            ),
-                            value: QuestionsView.tableView),
-                        ButtonSegment(
-                            icon: Padding(
-                              padding: EdgeInsets.only(bottom: 8),
-                              child: Icon(
                                 Icons.list_outlined,
                                 size: 20,
                               ),
                             ),
                             value: QuestionsView.listView),
+                        ButtonSegment(
+                            icon: Padding(
+                              padding: EdgeInsets.only(bottom: 8),
+                              child: Icon(
+                                Icons.table_chart_outlined,
+                                size: 20,
+                              ),
+                            ),
+                            value: QuestionsView.tableView),
                       ],
                       selected: selected),
                 )
@@ -187,8 +188,14 @@ class _QuestionsPageState extends State<QuestionsPage> {
                                             ],
                                           ).then((value) {
                                             if (value == 0) {
-                                              editDialog(
-                                                  context, questions, index);
+                                              Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          EditQuestionPage(
+                                                              context,
+                                                              questions,
+                                                              index)));
                                             } else if (value == 1) {
                                               // Delete mosque
                                               deleteAQuestion(
@@ -211,17 +218,37 @@ class _QuestionsPageState extends State<QuestionsPage> {
                                             ),
                                             child: ListTile(
                                               title: Padding(
-                                                padding:
-                                                    const EdgeInsets.all(8.0),
-                                                child: Text(question.question,
-                                                    style: TextStyle(
-                                                        color: Theme.of(context)
-                                                            .colorScheme
-                                                            .onPrimaryContainer,
-                                                        fontFamily:
-                                                            "Scheherazade",
-                                                        letterSpacing: 0)),
-                                              ),
+                                                  padding:
+                                                      const EdgeInsets.all(8.0),
+                                                  child: RichText(
+                                                    text: TextSpan(
+                                                      children: <TextSpan>[
+                                                        TextSpan(
+                                                          text:
+                                                              "${question.question}\n",
+                                                          style: TextStyle(
+                                                              fontFamily:
+                                                                  "Rubik",
+                                                              color: Theme.of(
+                                                                      context)
+                                                                  .colorScheme
+                                                                  .onSecondaryContainer,
+                                                              fontSize: 15),
+                                                        ),
+                                                        TextSpan(
+                                                            text: question
+                                                                .description,
+                                                            style: TextStyle(
+                                                                fontFamily:
+                                                                    "Scheherazade",
+                                                                color: Theme.of(
+                                                                        context)
+                                                                    .colorScheme
+                                                                    .onSecondaryContainer,
+                                                                fontSize: 25)),
+                                                      ],
+                                                    ),
+                                                  )),
                                               onTap: () {
                                                 Navigator.push(context,
                                                     MaterialPageRoute(
@@ -263,232 +290,12 @@ class _QuestionsPageState extends State<QuestionsPage> {
               child: const Icon(Icons.add),
             )));
   }
-
-  Future<dynamic> deleteAQuestion(
-      BuildContext context, List<Question> questions, int index) {
-    return showDialog(
-        context: context,
-        builder: (context) {
-          return Directionality(
-            textDirection: TextDirection.rtl,
-            child: AlertDialog(
-              icon: const Icon(Icons.delete_outline),
-              iconColor: Theme.of(context).colorScheme.error,
-              title: const Text("حذف سؤال"),
-              content:
-                  Text("هل أنت متأكد من حذف '${questions[index].question}'؟"),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: const Text("لا"),
-                ),
-                FilledButton(
-                  onPressed: () {
-                    Box<Question> questionsBox =
-                        Hive.box<Question>('questions');
-                    questionsBox.deleteAt(index);
-                    Navigator.pop(context);
-                  },
-                  child: const Text("نعم"),
-                ),
-              ],
-            ),
-          );
-        });
-  }
-}
-
-List<Question> filterUniqueQuestions(List<Question> questions) {
-  final uniqueQuestions = <Question>{};
-
-  for (var question in questions) {
-    uniqueQuestions.add(question);
-  }
-
-  return uniqueQuestions.toList();
-}
-
-class QuestionView extends StatelessWidget {
-  const QuestionView({
-    super.key,
-    required this.carouselController,
-    required this.questions,
-    required this.index,
-  });
-
-  final CarouselSliderController carouselController;
-  final List<Question> questions;
-  final int index;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-      body: Container(
-        constraints: const BoxConstraints.expand(),
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage("assets/background_new.png"),
-            fit: BoxFit.fill,
-          ),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(30),
-              child: Align(
-                alignment: Alignment.centerRight,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: IconButton.outlined(
-                    style: ButtonStyle(
-                        backgroundColor: WidgetStateProperty.all(
-                            Theme.of(context)
-                                .colorScheme
-                                .onPrimaryContainer
-                                .withOpacity(0.5))),
-                    icon: Icon(Icons.close,
-                        color: Theme.of(context).colorScheme.primaryContainer),
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                  ),
-                ),
-              ),
-            ),
-            Expanded(
-              child: CarouselSlider(
-                  options: CarouselOptions(
-                    viewportFraction: 1,
-                    initialPage: index,
-                    enableInfiniteScroll: false,
-                    height: MediaQuery.of(context).size.height,
-                  ),
-                  carouselController: carouselController,
-                  items: questions
-                      .map((question) => Column(children: [
-                            SizedBox(
-                                height: MediaQuery.of(context).size.height / 8),
-                            Align(
-                              alignment: Alignment.center,
-                              child: Row(
-                                children: [
-                                  Flexible(
-                                    child: Center(
-                                      child: Text(question.question,
-                                          textAlign: TextAlign.center,
-                                          textDirection: TextDirection.rtl,
-                                          style: TextStyle(
-                                              color: Colors.yellow,
-                                              fontFamily: "Scheherazade",
-                                              fontWeight: FontWeight.bold,
-                                              letterSpacing: 0,
-                                              fontSize: 25)),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(height: 20),
-                            Align(
-                              alignment: Alignment.center,
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.only(left: 20, right: 20),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Flexible(
-                                      child: AutoSizeText(
-                                        question.description!,
-                                        textDirection: TextDirection.rtl,
-                                        style: TextStyle(
-                                            fontSize: 25,
-                                            color: Colors.white,
-                                            fontFamily: "Scheherazade",
-                                            letterSpacing: 0),
-                                        minFontSize: 18,
-                                        stepGranularity: 18,
-                                        maxLines: 10,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    )
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ]))
-                      .toList()),
-            ),
-            if (questions.length > 1)
-              Padding(
-                padding: const EdgeInsets.all(20),
-                child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      // two buttons to forward and backward
-                      IconButton.outlined(
-                        iconSize: 30,
-                        icon: Icon(Icons.arrow_back,
-                            color:
-                                Theme.of(context).colorScheme.primaryContainer),
-                        onPressed: () {
-                          carouselController.previousPage();
-                        },
-                      ),
-                      const SizedBox(width: 20),
-                      IconButton.outlined(
-                        iconSize: 30,
-                        icon: Icon(Icons.arrow_forward,
-                            color:
-                                Theme.of(context).colorScheme.primaryContainer),
-                        onPressed: () {
-                          carouselController.nextPage();
-                        },
-                      ),
-                    ]),
-              ),
-            const SizedBox(height: 20)
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-List<Map<String, dynamic>> groupQuestions(List<Question> questions) {
-  Map<String, Map<String, dynamic>> groupedQuestions = {};
-
-  for (var question in questions) {
-    String key = '${question.question}_${question.description}';
-
-    if (!groupedQuestions.containsKey(key)) {
-      groupedQuestions[key] = {
-        'question': question.question,
-        'description': question.description,
-        'mosques': [],
-        'isParagraph': question.isParagraph
-      };
-    }
-    // don't add empty mosques
-    if (question.mosqueName.isNotEmpty) {
-      groupedQuestions[key]!['mosques'].add(
-          {'mosqueName': question.mosqueName, 'answered': question.answered});
-    }
-  }
-
-  return groupedQuestions.values.toList();
 }
 
 class MyTable extends StatelessWidget {
   final List<Question> allQuestions;
 
-  MyTable({required this.allQuestions});
+  const MyTable({super.key, required this.allQuestions});
 
   @override
   Widget build(BuildContext context) {
@@ -503,7 +310,6 @@ class MyTable extends StatelessWidget {
             0: FlexColumnWidth(6),
             1: FlexColumnWidth(8),
             2: FlexColumnWidth(10),
-            3: FlexColumnWidth(4),
           },
           border: TableBorder.all(
               borderRadius: BorderRadius.circular(10),
@@ -536,14 +342,6 @@ class MyTable extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text('المساجد',
-                      style: TextStyle(
-                          color: Theme.of(context)
-                              .colorScheme
-                              .onPrimaryContainer)),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text('النوع',
                       style: TextStyle(
                           color: Theme.of(context)
                               .colorScheme
@@ -604,17 +402,9 @@ class MyTable extends StatelessWidget {
                       }).toList(),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      question['isParagraph'] ? "خطبة" : "مسألة",
-                      style: TextStyle(
-                          color: Theme.of(context).colorScheme.onSurface),
-                    ),
-                  ),
                 ],
               );
-            }).toList(),
+            }),
           ],
         ),
       ),
