@@ -43,6 +43,9 @@ dependencies:
   carousel_slider: ^5.0.0
   auto_size_text: ^3.0.0
   community_material_icon: ^5.9.55
+  permission_handler: ^11.3.1
+  file_picker: ^8.1.4
+  url_launcher: ^6.3.1
 
 dev_dependencies:
   flutter_test:

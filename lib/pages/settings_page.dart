@@ -10,9 +10,9 @@ import 'package:masel/models/mosque_model.dart';
 import 'package:masel/models/question_model.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
-// import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher.dart';
 
-String applicationVersion = "0.0.3";
+String applicationVersion = "0.0.4";
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -60,11 +60,11 @@ class _SettingsPageState extends State<SettingsPage> {
             label: "فتح",
             onPressed: () async {
               // open the fileLocation with url_launcher
-              // Uri url = Uri.parse('file:/$fileLocation');
+              Uri url = Uri.parse('file:/$fileLocation');
 
-              // if (!await launchUrl(url)) {
-              //   throw Exception('Could not launch $url');
-              // }
+              if (!await launchUrl(url)) {
+                throw Exception('Could not launch $url');
+              }
             }),
       ),
     );
@@ -171,12 +171,12 @@ class _SettingsPageState extends State<SettingsPage> {
                       title: const Text("الذهاب الى المتجر"),
                       onTap: () async {
                         // open play store
-                        // Uri url = Uri.parse(
-                        //     'https://play.google.com/store/apps/details?id=com.orange.missed_works_app');
+                        Uri url = Uri.parse(
+                            'https://play.google.com/store/apps/details?id=com.orange.masel');
 
-                        // if (!await launchUrl(url)) {
-                        //   throw Exception('Could not launch $url');
-                        // }
+                        if (!await launchUrl(url)) {
+                          throw Exception('Could not launch $url');
+                        }
                       },
                     ),
                   ],
