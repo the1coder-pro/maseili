@@ -32,4 +32,21 @@ class Question extends HiveObject {
           description == other.description;
   @override
   int get hashCode => question.hashCode ^ description.hashCode;
+
+  // fromJson
+  Question.fromJson(Map<String, dynamic> json)
+      : question = json['question'],
+        description = json['description'],
+        answered = json['answered'],
+        mosqueName = json['mosqueName'],
+        isParagraph = json['isParagraph'];
+
+  // toJson
+  Map<String, dynamic> toJson() => {
+        'question': question,
+        'description': description,
+        'answered': answered,
+        'mosqueName': mosqueName,
+        'isParagraph': isParagraph,
+      };
 }

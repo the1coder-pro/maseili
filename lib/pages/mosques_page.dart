@@ -132,12 +132,14 @@ class _MosquesPageState extends State<MosquesPage> {
                                     ),
                                   ],
                                 ).then((value) {
-                                  if (value == 0) {
-                                    showEditMosqueDialog(
-                                        context, index, mosques[index].name);
-                                  } else if (value == 1) {
-                                    // Delete mosque
-                                    deleteMosque(context, mosques, index);
+                                  if (context.mounted) {
+                                    if (value == 0) {
+                                      showEditMosqueDialog(
+                                          context, index, mosques[index].name);
+                                    } else if (value == 1) {
+                                      // Delete mosque
+                                      deleteMosque(context, mosques, index);
+                                    }
                                   }
                                 });
                               },
@@ -213,12 +215,14 @@ class _MosquesPageState extends State<MosquesPage> {
                                     ),
                                   ],
                                 ).then((value) {
-                                  if (value == 0) {
-                                    showEditMosqueDialog(
-                                        context, index, mosques[index].name);
-                                  } else if (value == 1) {
-                                    // Delete mosque
-                                    deleteMosque(context, mosques, index);
+                                  if (context.mounted) {
+                                    if (value == 0) {
+                                      showEditMosqueDialog(
+                                          context, index, mosques[index].name);
+                                    } else if (value == 1) {
+                                      // Delete mosque
+                                      deleteMosque(context, mosques, index);
+                                    }
                                   }
                                 });
                               },

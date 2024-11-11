@@ -49,7 +49,7 @@ class _QuestionsPageState extends State<QuestionsPage> {
                             icon: Padding(
                               padding: EdgeInsets.only(bottom: 8),
                               child: Icon(
-                                Icons.list_outlined,
+                                Icons.view_agenda_outlined,
                                 size: 20,
                               ),
                             ),

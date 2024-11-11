@@ -28,7 +28,7 @@ class _AddingQuestionsDialogState extends State<AddingQuestionsDialog> {
           borderRadius: BorderRadius.all(Radius.circular(10))),
       child: SizedBox(
         width: 350,
-        height: 190,
+        height: 220,
         child: Center(
           child: Padding(
             padding: const EdgeInsets.all(10),
@@ -109,7 +109,10 @@ class _AddingQuestionsDialogState extends State<AddingQuestionsDialog> {
                                                 DropdownButtonFormField(
                                                   decoration: InputDecoration(
                                                       border:
-                                                          OutlineInputBorder()),
+                                                          OutlineInputBorder(
+                                                    borderSide:
+                                                        BorderSide(width: 0),
+                                                  )),
 
                                                   onChanged: (value) {
                                                     // add question to this mosque
@@ -120,7 +123,7 @@ class _AddingQuestionsDialogState extends State<AddingQuestionsDialog> {
                                                     selectedQuestion = Question(
                                                         question.question,
                                                         question.description,
-                                                        question.answered,
+                                                        false,
                                                         widget
                                                             .widget.mosqueName,
                                                         question.isParagraph);
@@ -150,7 +153,7 @@ class _AddingQuestionsDialogState extends State<AddingQuestionsDialog> {
                                                       child: Text(
                                                         question.question,
                                                         style: TextStyle(
-                                                            fontSize: 20,
+                                                            fontSize: 16,
                                                             fontFamily:
                                                                 "Rubik"),
                                                       ),
