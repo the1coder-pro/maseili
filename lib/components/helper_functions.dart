@@ -1,5 +1,7 @@
 import 'package:masel/models/question_model.dart';
 
+import '../models/mosque_model.dart';
+
 List<Question> filterUniqueQuestions(List<Question> questions) {
   final uniqueQuestions = <Question>{};
 
@@ -8,6 +10,16 @@ List<Question> filterUniqueQuestions(List<Question> questions) {
   }
 
   return uniqueQuestions.toList();
+}
+
+List<Mosque> getMosques(List<Mosque> mosques) {
+  var mosques = <Mosque>[];
+
+  for (var mosque in mosques) {
+    mosques.add(mosque);
+  }
+
+  return mosques.toList();
 }
 
 List<Map<String, dynamic>> groupQuestions(List<Question> questions) {

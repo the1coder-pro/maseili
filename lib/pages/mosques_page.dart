@@ -1,10 +1,13 @@
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:masel/components/helper_functions.dart';
 import 'package:masel/dialogs/delete_mosque_dialog.dart';
 import 'package:masel/dialogs/edit_mosque_dialog.dart';
 import 'package:masel/models/mosque_model.dart';
 import 'package:masel/pages/mosque_page.dart';
+
+import '../models/question_model.dart';
 
 enum ViewType { gridView, listView }
 
@@ -41,10 +44,13 @@ class _MosquesPageState extends State<MosquesPage> {
             Padding(
               padding: const EdgeInsets.only(left: 8, top: 8, bottom: 8),
               child: SegmentedButton<ViewType>(
-                  onSelectionChanged: (Set<ViewType> value) {
+                  onSelectionChanged: (Set<ViewType> value) async {
                     setState(() {
                       selected = {value.first};
                     });
+
+
+
                   },
                   showSelectedIcon: false,
                   segments: const [
@@ -76,6 +82,7 @@ class _MosquesPageState extends State<MosquesPage> {
             valueListenable: Hive.box<Mosque>('mosques').listenable(),
             builder: (context, box, _) {
               var mosques = box.values.toList();
+
               if (mosques.isEmpty) {
                 return const Text("لا توجد مساجد",
                     style: TextStyle(fontSize: 25));
@@ -173,7 +180,7 @@ class _MosquesPageState extends State<MosquesPage> {
                           },
                         )
                       : GridView.builder(
-                          itemCount: box.values.length,
+                          itemCount: mosques.length,
                           gridDelegate:
                               const SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: 2,

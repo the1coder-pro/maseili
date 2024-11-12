@@ -36,7 +36,7 @@ class _AddingQuestionsDialogState extends State<AddingQuestionsDialog> {
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.add_comment_outlined),
+                Icon(Icons.add_comment_outlined, color: Theme.of(context).colorScheme.secondary),
                 const SizedBox(height: 10),
                 Padding(
                   padding: const EdgeInsets.only(right: 20, left: 20),

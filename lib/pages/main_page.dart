@@ -25,6 +25,7 @@ class _MainPageState extends State<MainPage> {
         return const MosquesPage();
     }
   }
+  
 
   @override
   Widget build(BuildContext context) {
@@ -34,25 +35,34 @@ class _MainPageState extends State<MainPage> {
         child: Scaffold(
           body: selectedPage(_selectedIndex),
           bottomNavigationBar: NavigationBar(
+            backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
+            indicatorColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+
+                
             selectedIndex: _selectedIndex,
             onDestinationSelected: (int index) {
               setState(() {
                 _selectedIndex = index;
               });
             },
-            destinations: const [
+            destinations: [
               NavigationDestination(
-                selectedIcon: Icon(Icons.mosque),
+                selectedIcon: Icon(Icons.mosque,
+                    color: Theme.of(context).colorScheme.inverseSurface),
                 icon: Icon(Icons.mosque_outlined),
                 label: 'المساجد',
               ),
               NavigationDestination(
-                selectedIcon: Icon(Icons.question_answer),
+                selectedIcon: Icon(Icons.question_answer,
+                    color: Theme.of(context).colorScheme.inverseSurface),
+
                 icon: Icon(Icons.question_answer_outlined),
                 label: 'المسائل',
               ),
               NavigationDestination(
-                selectedIcon: Icon(Icons.settings),
+                selectedIcon: Icon(Icons.settings,
+                    color: Theme.of(context).colorScheme.inverseSurface),
+
                 icon: Icon(Icons.settings_outlined),
                 label: 'الإعدادات',
               ),

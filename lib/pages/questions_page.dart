@@ -69,11 +69,9 @@ class _QuestionsPageState extends State<QuestionsPage> {
               ],
             ),
             body: ValueListenableBuilder<Box<Question>>(
-              // show all questions in a list
-
-              valueListenable: Hive.box<Question>('questions').listenable(),
-              builder: (BuildContext context, value, _) {
-                var allQuestions = value.values.toList();
+            valueListenable: Hive.box<Question>('questions').listenable(),
+              builder: (BuildContext context, box, _) {
+                var allQuestions = box.values.toList();
                 var questions = filterUniqueQuestions(allQuestions);
                 // filter questions to show unique questions only
                 if (questions.isEmpty) {
@@ -249,6 +247,9 @@ class _QuestionsPageState extends State<QuestionsPage> {
                                                       ],
                                                     ),
                                                   )),
+                                              splashColor: Theme.of(context)
+                                                  .colorScheme
+                                                  .secondaryContainer,
                                               onTap: () {
                                                 Navigator.push(context,
                                                     MaterialPageRoute(

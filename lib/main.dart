@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:masel/pages/main_page.dart';
 import 'package:masel/models/mosque_model.dart';
 import 'package:masel/models/question_model.dart';
 import 'package:masel/components/settings.dart';
 import 'package:masel/components/theme.dart';
+import 'package:masel/theme.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
@@ -17,6 +19,7 @@ void main() async {
 
   runApp(const MyApp());
 }
+
 
 const textTheme = TextTheme(
   displayLarge:
@@ -64,6 +67,7 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+
     return ChangeNotifierProvider(
       create: (context) => themeChangeProvider,
       child: Consumer<DarkThemeProvider>(
@@ -72,12 +76,12 @@ class _MyAppState extends State<MyApp> {
           debugShowCheckedModeBanner: false,
           theme: ThemeData(
             textTheme: textTheme,
-            colorScheme: MaterialTheme.lightScheme(),
+            colorScheme: Material3Theme.lightScheme(),
             useMaterial3: true,
           ),
           darkTheme: ThemeData(
             textTheme: textTheme,
-            colorScheme: MaterialTheme.darkScheme(),
+            colorScheme: Material3Theme.darkScheme(),
             useMaterial3: true,
           ),
           home: const MainPage(),
