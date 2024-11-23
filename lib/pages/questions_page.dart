@@ -72,7 +72,7 @@ class _QuestionsPageState extends State<QuestionsPage> {
             valueListenable: Hive.box<Question>('questions').listenable(),
               builder: (BuildContext context, box, _) {
                 var allQuestions = box.values.toList();
-                var questions = filterUniqueQuestions(allQuestions);
+                var questions = filterUniqueQuestions(allQuestions).reversed.toList();
                 // filter questions to show unique questions only
                 if (questions.isEmpty) {
                   return const Center(
@@ -115,6 +115,7 @@ class _QuestionsPageState extends State<QuestionsPage> {
                                 ),
                                 Expanded(
                                   child: ListView.builder(
+                                    padding: EdgeInsets.only(bottom: 80),
                                     itemCount: questions
                                         .where((element) =>
                                             element.question.contains(
@@ -268,6 +269,7 @@ class _QuestionsPageState extends State<QuestionsPage> {
                                     },
                                   ),
                                 ),
+
                               ],
                             ),
                           )
@@ -282,6 +284,7 @@ class _QuestionsPageState extends State<QuestionsPage> {
               },
             ),
             floatingActionButton: FloatingActionButton(
+
               elevation: 3,
               onPressed: () {
                 Navigator.push(context, MaterialPageRoute(builder: (context) {

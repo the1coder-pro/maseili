@@ -1,18 +1,15 @@
 import 'dart:convert';
 import 'dart:io';
-
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-
 import 'package:masel/components/settings.dart';
 import 'package:masel/models/mosque_model.dart';
 import 'package:masel/models/question_model.dart';
-import 'package:permission_handler/permission_handler.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-String applicationVersion = "0.0.5";
+String applicationVersion = "0.0.6";
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -40,8 +37,10 @@ class _SettingsPageState extends State<SettingsPage> {
 
     String json = jsonEncode(map);
     print("json: $json");
-    Directory dir = await _getDirectory();
-    String fileLocation = dir.path;
+    // Directory dir = await _getDirectory();
+    final directory = await getExternalStorageDirectory();
+
+    String fileLocation = directory!.path;
     String formattedDate = DateTime.now()
         .toString()
         .replaceAll('.', '-')
@@ -49,22 +48,16 @@ class _SettingsPageState extends State<SettingsPage> {
         .replaceAll(':', '-');
 
     String path =
-        '$fileLocation$formattedDate.json'; //Change .json to your desired file format(like .barbackup or .hive).
+        '$fileLocation/$formattedDate.json'; //Change .json to your desired file format(like .barbackup or .hive).
     File backupFile = File(path);
     await backupFile.writeAsString(json);
+
+    print("The file was written to: $path");
     // scaffold to show the user that the backup is done and have a button to open the folder
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('تم تصدير البيانات بنجاح.'),
-        action: SnackBarAction(
-            label: "عرض",
-            onPressed: () async {
-              FilePickerResult? file = await FilePicker.platform.pickFiles(
-                type: FileType.custom,
-                initialDirectory: fileLocation,
-                allowedExtensions: ['json'],
-              );
-            }),
+
       ),
     );
   }
@@ -80,47 +73,7 @@ class _SettingsPageState extends State<SettingsPage> {
     return newDirectory;
   }
 
-  Future<void> restoreBackup() async {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('جاري استيراد البيانات...')),
-    );
-    Directory dir = await _getDirectory();
-    String fileLocation = dir.path;
-    FilePickerResult? file = await FilePicker.platform.pickFiles(
-      type: FileType.custom,
-      initialDirectory: fileLocation,
-      allowedExtensions: ['json'],
-    );
-    if (file != null) {
-      // get the file as bytes
-      File files = File(file.files.single.path!);
 
-      Hive.box<Question>('questions').clear();
-      Hive.box<Mosque>('mosques').clear();
-      var map = jsonDecode(await files.readAsString());
-      for (var i = 0; i < map.length; i++) {
-        Question question = Question.fromJson(map[i]);
-
-        Hive.box<Question>('questions').add(question);
-      }
-
-      var mosqueNames = [];
-      for (Question question in Hive.box<Question>('questions').values.toList()) {
-       if (question.mosqueName.isNotEmpty) {
-          if (!mosqueNames.contains(question.mosqueName)) {
-            mosqueNames.add(question.mosqueName);
-          }
-        }
-      }
-      Hive.box<Mosque>('mosques').addAll(mosqueNames.map((name) => Mosque(name)).toList());
-
-      print("MosqueNames: $mosqueNames");
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('تم إستيراد البيانات بنجاح.')),
-      );
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -131,7 +84,7 @@ class _SettingsPageState extends State<SettingsPage> {
           appBar: AppBar(
             title: const Text("الإعدادات"),
             centerTitle: true,
-            ),
+          ),
           body: Padding(
             padding: const EdgeInsets.all(10),
             child: Column(
@@ -154,24 +107,28 @@ class _SettingsPageState extends State<SettingsPage> {
                           trailing: const Icon(Icons.backup_outlined),
                           title: const Text("تصدير البيانات"),
                           onTap: () async {
-                            if (await Permission.manageExternalStorage.isGranted) {
-                              await createBackup();
-                            } else {
-                              await Permission.manageExternalStorage.request();
-
-                            }
-
+                            // if (await Permission.storage.request().isGranted) {
+                            await createBackup();
                           },
                         ),
                         const Divider(),
-                        ListTile(
-                          trailing: const Icon(Icons.restore_outlined),
-                          title: const Text("استيراد البيانات"),
-                          onTap: () async {
-                            await restoreBackup();
 
-                          },
-                        ),
+                      ListTile(
+                        splashColor: Theme.of(context).colorScheme.surface,
+                        trailing: const Icon(Icons.restore_outlined),
+                        title: const Text("استيراد البيانات"),
+                        onTap: () async {
+                         Navigator.push(context, MaterialPageRoute(builder: (context) => Directionality(
+                           textDirection: TextDirection.rtl,
+                           child: Scaffold(
+                               appBar: AppBar(
+                                 title: Text("أختر النسخة الإحتياطية"),
+                               ),
+                               body: SelectBackupFile()),
+                         )));
+                        },
+                      ),
+                        // ),
                       ])),
                       ListTile(
                         leading: const Icon(Icons.open_in_new),
@@ -222,5 +179,131 @@ class _SettingsPageState extends State<SettingsPage> {
             ),
           ),
         ));
+  }
+}
+
+
+class SelectBackupFile extends StatefulWidget {
+  @override
+  _SelectBackupFileState createState() => _SelectBackupFileState();
+}
+
+class _SelectBackupFileState extends State<SelectBackupFile> {
+  Directory? _currentDirectory;
+  List<FileSystemEntity>? _files;
+  String? _selectedFilePath;
+  @override
+  void initState() {
+    super.initState();
+    _initExternalStorage();
+  }
+
+  Future<void> _initExternalStorage() async {
+    try {
+      Directory? externalStorageDir = await getExternalStorageDirectory();
+      if (externalStorageDir != null) {
+        setState(() {
+          _currentDirectory = externalStorageDir;
+          _files = externalStorageDir.listSync();
+        });
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to access external storage: $e')),
+      );
+    }
+  }
+
+  void _navigateToDirectory(Directory directory) {
+    setState(() {
+      _currentDirectory = directory;
+      _files = directory.listSync();
+    });
+  }
+
+  void _selectFile(String filePath) async {
+    setState(() {
+      _selectedFilePath = filePath;
+    });
+
+
+    Navigator.pop(context);
+    await restoreBackup(filePath);
+  }
+    Future<void> restoreBackup(String filePath) async {
+
+        File files = File(filePath);
+
+        Hive.box<Question>('questions').clear();
+        Hive.box<Mosque>('mosques').clear();
+        var map = jsonDecode(await files.readAsString());
+        for (var i = 0; i < map.length; i++) {
+          Question question = Question.fromJson(map[i]);
+
+          Hive.box<Question>('questions').add(question);
+        }
+
+        var mosqueNames = [];
+        for (Question question
+        in Hive.box<Question>('questions').values.toList()) {
+          if (question.mosqueName.isNotEmpty) {
+            if (!mosqueNames.contains(question.mosqueName)) {
+              mosqueNames.add(question.mosqueName);
+            }
+          }
+        }
+        Hive.box<Mosque>('mosques')
+            .addAll(mosqueNames.map((name) => Mosque(name)).toList());
+
+        print("MosqueNames: $mosqueNames");
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('تم إستيراد البيانات بنجاح.')),
+        );
+
+    }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        _currentDirectory != null
+            ? Expanded(
+                child: ListView.builder(
+                  itemCount: _files?.length ?? 0,
+                  itemBuilder: (context, index) {
+                    final file = _files![index];
+                    if (FileSystemEntity.isDirectorySync(file.path)) {
+                      return ListTile(
+                        title: Text(file.path.split('/').last),
+                        leading: Icon(Icons.folder),
+
+                        onTap: () => _navigateToDirectory(file as Directory),
+                      );
+                    } else {
+                      return ListTile(
+                        title: Text(file.path.split('/').last),
+                        leading: Icon(Icons.insert_drive_file),
+                        trailing: IconButton(
+                          icon: Icon(Icons.delete, color: Colors.red),
+                          onPressed: () {
+                            file.deleteSync();
+                            _initExternalStorage();
+                          },
+                        ),
+                        onTap: () => _selectFile(file.path),
+                      );
+                    }
+                  },
+                ),
+              )
+            : Center(child: CircularProgressIndicator()),
+        if (_selectedFilePath != null)
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text('Selected File: $_selectedFilePath'),
+          ),
+      ],
+    );
   }
 }

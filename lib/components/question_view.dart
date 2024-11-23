@@ -32,28 +32,7 @@ class QuestionView extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Padding(
-              padding: const EdgeInsets.all(30),
-              child: Align(
-                alignment: Alignment.centerRight,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: IconButton.outlined(
-                    style: ButtonStyle(
-                        backgroundColor: WidgetStateProperty.all(
-                            Theme.of(context)
-                                .colorScheme
-                                .onPrimaryContainer
-                                .withOpacity(0.5))),
-                    icon: Icon(Icons.close,
-                        color: Theme.of(context).colorScheme.primaryContainer),
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                  ),
-                ),
-              ),
-            ),
+            SizedBox(height: MediaQuery.of(context).size.height / 8),
             Expanded(
               child: CarouselSlider(
                   options: CarouselOptions(
@@ -66,7 +45,7 @@ class QuestionView extends StatelessWidget {
                   items: questions
                       .map((question) => Column(children: [
                             SizedBox(
-                                height: MediaQuery.of(context).size.height / 8),
+                                height: MediaQuery.of(context).size.height /8),
                             Align(
                               alignment: Alignment.center,
                               child: Row(
@@ -81,37 +60,42 @@ class QuestionView extends StatelessWidget {
                                               fontFamily: "Scheherazade",
                                               fontWeight: FontWeight.bold,
                                               letterSpacing: 0,
-                                              fontSize: 25)),
+                                              fontSize: 20)),
                                     ),
                                   ),
                                 ],
                               ),
                             ),
-                            const SizedBox(height: 20),
-                            Align(
-                              alignment: Alignment.center,
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.only(left: 20, right: 20),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Flexible(
-                                      child: AutoSizeText(
-                                        question.description!,
-                                        textDirection: TextDirection.rtl,
-                                        style: TextStyle(
-                                            fontSize: 25,
-                                            color: Colors.white,
-                                            fontFamily: "Scheherazade",
-                                            letterSpacing: 0),
-                                        minFontSize: 18,
-                                        stepGranularity: 18,
-                                        maxLines: 10,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    )
-                                  ],
+                            const SizedBox(height: 10),
+                            Center(
+                              child: Align(
+                                alignment: Alignment.center,
+                                child: Padding(
+                                  padding:
+                                      const EdgeInsets.only(left: 20, right: 20),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Flexible(
+                                        child: AutoSizeText(
+
+                                          question.description!,
+                                          textDirection: TextDirection.rtl,
+                                          style: TextStyle(
+                                              fontSize: 30,
+                                              height: 1.2,
+                                              color: Colors.white,
+                                              fontFamily: "Scheherazade",
+                                              letterSpacing: 0),
+                                          minFontSize: 18,
+                                          stepGranularity: 18,
+                                          maxLines: 18,
+
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      )
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
@@ -120,27 +104,55 @@ class QuestionView extends StatelessWidget {
             ),
             if (questions.length > 1)
               Padding(
-                padding: const EdgeInsets.all(20),
+                padding: const EdgeInsets.all(15),
                 child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       // two buttons to forward and backward
                       IconButton.outlined(
+                        style: ButtonStyle(
+                            backgroundColor: WidgetStateProperty.all(
+                                Theme.of(context)
+                                    .colorScheme
+                                    .onSecondaryContainer
+                                    .withOpacity(0.5))),
                         iconSize: 30,
                         icon: Icon(Icons.arrow_back,
                             color:
-                                Theme.of(context).colorScheme.primaryContainer),
+                                Theme.of(context).colorScheme.secondaryContainer),
                         onPressed: () {
                           carouselController.previousPage();
                         },
                       ),
-                      const SizedBox(width: 20),
+                      const SizedBox(width: 8),
+                      OutlinedButton(
+                        style: ButtonStyle(
+                            backgroundColor: WidgetStateProperty.all(
+                                Theme.of(context)
+                                    .colorScheme
+                                    .onSecondaryContainer
+                                    .withOpacity(0.5))),
+                        child:Icon(Icons.close,
+                            color:
+                            Theme.of(context).colorScheme.secondaryContainer),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                      ),
+                      const SizedBox(width: 8),
+
                       IconButton.outlined(
+                        style: ButtonStyle(
+                            backgroundColor: WidgetStateProperty.all(
+                                Theme.of(context)
+                                    .colorScheme
+                                    .onSecondaryContainer
+                                    .withOpacity(0.5))),
                         iconSize: 30,
                         icon: Icon(Icons.arrow_forward,
                             color:
-                                Theme.of(context).colorScheme.primaryContainer),
+                            Theme.of(context).colorScheme.secondaryContainer),
                         onPressed: () {
                           carouselController.nextPage();
                         },

@@ -61,7 +61,7 @@ class _AddingQuestionsDialogState extends State<AddingQuestionsDialog> {
                           onPressed: () {
                             Navigator.pop(context);
                             var questionsList =
-                                Hive.box<Question>('questions').values.toList();
+                                Hive.box<Question>('questions').values.toList().reversed.toList();
                             showDialog(
                                 context: context,
                                 builder: (context) {
