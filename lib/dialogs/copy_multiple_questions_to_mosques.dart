@@ -46,6 +46,7 @@ class _CopyMultipleQuestionsToMosquesState
                       textDirection: TextDirection.rtl,
                       style: const TextStyle(fontSize: 18),
                     ),
+
                     value: selectedMosques.contains(mosque.name),
                     onChanged: (value) {
                       setState(() {
@@ -78,9 +79,15 @@ class _CopyMultipleQuestionsToMosquesState
                       question.description,
                       false,
                       mosqueName,
-                      question.isParagraph));
+                      question.isParagraph, null));
                 }
               }
+
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text("تم نسخ المسائل بنجاح"),
+                ),
+              );
 
               Navigator.pop(context, PageMode.normal);
             },

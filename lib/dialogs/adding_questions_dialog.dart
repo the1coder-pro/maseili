@@ -126,7 +126,7 @@ class _AddingQuestionsDialogState extends State<AddingQuestionsDialog> {
                                                         false,
                                                         widget
                                                             .widget.mosqueName,
-                                                        question.isParagraph);
+                                                        question.isParagraph, null);
                                                   },
                                                   // retrieve questions from questions page to add to this mosque
                                                   items: filterUniqueQuestions(

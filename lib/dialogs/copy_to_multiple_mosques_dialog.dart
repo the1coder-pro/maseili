@@ -41,9 +41,24 @@ class _CopyToMultipleMosquesDialogState
                   CheckboxListTile(
                     title: Text(
                       mosque.name,
+
                       textDirection: TextDirection.rtl,
                       style: const TextStyle(fontSize: 18),
                     ),
+                    subtitle: // if the question is in the mosque already show a message
+                        Hive.box<Question>('questions').values
+                                .toList()
+                                .where((element) =>
+                                    element.mosqueName == mosque.name)
+                                .toList()
+                                .contains(widget.question)
+                            ?  Text(
+                                "المسألة موجودة في هذا المسجد",
+                                style: TextStyle(
+                                  fontSize: 14,
+                                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8)),
+                              )
+                            : null,
                     value: selectedMosques.contains(mosque.name),
                     onChanged: (value) {
                       setState(() {
@@ -75,8 +90,14 @@ class _CopyToMultipleMosquesDialogState
                       widget.question.description,
                       false,
                       mosqueName,
-                      widget.question.isParagraph));
+                      widget.question.isParagraph, null));
                 }
+
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text("تم نسخ المسألة إلى المساجد المختارة"),
+                  ),
+                );
 
                 Navigator.pop(context);
               },

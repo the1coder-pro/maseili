@@ -18,6 +18,9 @@ class QuestionView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height / 1.75;
+
+
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.primaryContainer,
       body: Container(
@@ -32,7 +35,7 @@ class QuestionView extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SizedBox(height: MediaQuery.of(context).size.height / 8),
+            SizedBox(height: MediaQuery.of(context).size.height / 9),
             Expanded(
               child: CarouselSlider(
                   options: CarouselOptions(
@@ -52,49 +55,57 @@ class QuestionView extends StatelessWidget {
                                 children: [
                                   Flexible(
                                     child: Center(
-                                      child: Text(question.question,
-                                          textAlign: TextAlign.center,
-                                          textDirection: TextDirection.rtl,
-                                          style: TextStyle(
-                                              color: Colors.yellow,
-                                              fontFamily: "Scheherazade",
-                                              fontWeight: FontWeight.bold,
-                                              letterSpacing: 0,
-                                              fontSize: 20)),
+                                      child: SizedBox(
+                                        width: 200,
+                                        child: AutoSizeText(question.question,
+                                            textAlign: TextAlign.center,
+                                            textDirection: TextDirection.rtl,
+                                            minFontSize: 20,
+                                            maxFontSize: 30,
+                                            style: TextStyle(
+                                                color: Colors.yellow,
+                                                fontFamily: "Scheherazade",
+                                                fontWeight: FontWeight.bold,
+                                                letterSpacing: 0)),
+                                      ),
                                     ),
                                   ),
                                 ],
                               ),
                             ),
-                            const SizedBox(height: 10),
-                            Center(
-                              child: Align(
-                                alignment: Alignment.center,
-                                child: Padding(
-                                  padding:
-                                      const EdgeInsets.only(left: 20, right: 20),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Flexible(
-                                        child: AutoSizeText(
+                            const SizedBox(height: 8),
+                            Padding(
+                              padding: const EdgeInsets.all(8),
+                              child: Center(
+                                child: Align(
+                                  alignment: Alignment.center,
+                                  child: Padding(
+                                    padding:
+                                        const EdgeInsets.only(top: 10, left: 15, right: 15),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Flexible(
+                                          child: AutoSizeText(
 
-                                          question.description!,
-                                          textDirection: TextDirection.rtl,
-                                          style: TextStyle(
-                                              fontSize: 30,
-                                              height: 1.2,
-                                              color: Colors.white,
-                                              fontFamily: "Scheherazade",
-                                              letterSpacing: 0),
-                                          minFontSize: 18,
-                                          stepGranularity: 18,
-                                          maxLines: 18,
-
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                      )
-                                    ],
+                                            question.description!,
+                                            textDirection: TextDirection.rtl,
+                                            style: TextStyle(
+                                                fontSize: question.description!.length < 300 ? screenHeight * 0.05 : screenHeight * 0.035,
+                                                height: 1.6,
+                                                color: Colors.white,
+                                                fontFamily: "Scheherazade",
+                                                letterSpacing: 0),
+                                            // make the values below dynamic for the mediaQuery size
+                                            minFontSize: question.description!.length < 100 ? screenHeight * 0.03 : screenHeight * 0.02,
+                                            maxLines: (screenHeight / (question.description!.length < 100 ? screenHeight * 0.05 : screenHeight * 0.04)).floor(),
+                                            stepGranularity: question.description!.length < 100 ? screenHeight * 0.03 : screenHeight * 0.02,
+                                            textAlign: TextAlign.justify,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        )
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),
@@ -102,14 +113,15 @@ class QuestionView extends StatelessWidget {
                           ]))
                       .toList()),
             ),
-            if (questions.length > 1)
               Padding(
-                padding: const EdgeInsets.all(15),
+                padding: const EdgeInsets.all(7),
                 child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       // two buttons to forward and backward
+                      if (questions.length > 1)
+
                       IconButton.outlined(
                         style: ButtonStyle(
                             backgroundColor: WidgetStateProperty.all(
@@ -141,6 +153,7 @@ class QuestionView extends StatelessWidget {
                         },
                       ),
                       const SizedBox(width: 8),
+                      if (questions.length > 1)
 
                       IconButton.outlined(
                         style: ButtonStyle(

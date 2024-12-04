@@ -3,7 +3,7 @@ import "package:hive_flutter/hive_flutter.dart";
 
 part 'question_model.g.dart';
 
-@HiveType(typeId: 1)
+@HiveType(typeId: 3)
 class Question extends HiveObject {
   @HiveField(0)
   late String question;
@@ -20,8 +20,11 @@ class Question extends HiveObject {
   @HiveField(4)
   bool? isParagraph = false;
 
+  @HiveField(5)
+  DateTime? dateOfAnswer;
+
   Question(this.question, this.description, this.answered, this.mosqueName,
-      this.isParagraph);
+      this.isParagraph, this.dateOfAnswer);
 
   @override
   bool operator ==(Object other) =>
@@ -39,7 +42,8 @@ class Question extends HiveObject {
         description = json['description'],
         answered = json['answered'],
         mosqueName = json['mosqueName'],
-        isParagraph = json['isParagraph'];
+        isParagraph = json['isParagraph'],
+        dateOfAnswer = json['dateOfAnswer'];
 
   // toJson
   Map<String, dynamic> toJson() => {
@@ -48,5 +52,6 @@ class Question extends HiveObject {
         'answered': answered,
         'mosqueName': mosqueName,
         'isParagraph': isParagraph,
+        'dateOfAnswer': dateOfAnswer
       };
 }

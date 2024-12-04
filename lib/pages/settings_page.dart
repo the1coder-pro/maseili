@@ -9,7 +9,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-String applicationVersion = "0.0.6";
+String applicationVersion = "0.0.9";
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});

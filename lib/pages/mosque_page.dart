@@ -7,6 +7,7 @@ import 'package:masel/dialogs/copy_to_multiple_mosques_dialog.dart';
 import 'package:masel/dialogs/delete_dialog.dart';
 import 'package:masel/pages/paragraph_page.dart';
 import 'package:masel/models/question_model.dart';
+import 'package:intl/intl.dart' as intl;
 import 'package:masel/components/settings.dart';
 import 'package:provider/provider.dart';
 
@@ -29,6 +30,7 @@ class _MosquePageState extends State<MosquePage> {
   List<Question> selectedQuestion = [];
 
   PageMode pageMode = PageMode.normal;
+
 
   @override
   Widget build(BuildContext context) {
@@ -217,6 +219,7 @@ class _MosquePageState extends State<MosquePage> {
                                         .colorScheme
                                         .tertiaryContainer,
                                     label: Text(
+
                                       questions[index].isParagraph == true
                                           ? "خطبة"
                                           : "مسألة",
@@ -311,11 +314,52 @@ class _MosquePageState extends State<MosquePage> {
                                   const EdgeInsets.only(top: 5, bottom: 10),
                               child: CheckboxListTile(
                                 value: questions[index].answered,
-                                title: const Text("تم شرحه"),
-                                onChanged: (value) {
-                                  questions[index].answered = value!;
 
-                                  questions[index].save();
+                                title: const Text("تم شرحه"),
+                                subtitle: questions[index].answered
+                                    ? Text(
+                                        intl.DateFormat('E (h:mm a) yyyy/MM/dd').format(questions[index].dateOfAnswer!).replaceFirst("PM", "مساءً").replaceFirst("AM", "صباحًا").replaceFirst("Sun", "الأحد").replaceFirst("Mon", "الإثنين").replaceFirst("Tue", "الثلاثاء").replaceFirst("Wed", "الأربعاء").replaceFirst("Thu", "الخميس").replaceFirst("Fri", "الجمعة").replaceFirst("Sat", "السبت"),
+                                textDirection: TextDirection.rtl, style: TextStyle(fontSize: 15),)
+                                    : null,
+                                onChanged: (value) {
+                                  // show dialog to confirm
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return Directionality(
+                                        textDirection: TextDirection.rtl,
+                                        child: AlertDialog(
+                                          icon: const Icon(Icons.check),
+                                          title:  Text("تأكيد ${questions[index].dateOfAnswer != null ? 'عدم': ''} الشرح"),
+                                          content: Text(
+                                              "هل أنت متأكد من ${questions[index].dateOfAnswer != null ? 'عدم ': ''}شرح هذه المسألة؟"),
+                                          actions: [
+                                            TextButton(
+                                              onPressed: () {
+                                                Navigator.pop(context);
+                                              },
+                                              child: const Text("إلغاء"),
+                                            ),
+                                            FilledButton(
+                                              onPressed: () {
+                                                Navigator.pop(context);
+                                                questions[index].answered = value!;
+                                                questions[index].dateOfAnswer =
+                                                    DateTime.now();
+                                                questions[index].save();
+                                              },
+                                              child: const Text("تأكيد"),
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    },
+                                  );
+                                  // questions[index].answered = value!;
+                                  // questions[index].dateOfAnswer = DateTime.now();
+                                  //
+                                  //
+                                  // questions[index].save();
                                 },
                                 secondary: PopupMenuButton(
                                   itemBuilder: (context) =>

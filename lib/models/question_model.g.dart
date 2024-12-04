@@ -8,7 +8,7 @@ part of 'question_model.dart';
 
 class QuestionAdapter extends TypeAdapter<Question> {
   @override
-  final int typeId = 1;
+  final int typeId = 3;
 
   @override
   Question read(BinaryReader reader) {
@@ -22,13 +22,14 @@ class QuestionAdapter extends TypeAdapter<Question> {
       fields[2] as bool,
       fields[3] as String,
       fields[4] as bool?,
+      fields[5] as DateTime?,
     );
   }
 
   @override
   void write(BinaryWriter writer, Question obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(6)
       ..writeByte(0)
       ..write(obj.question)
       ..writeByte(1)
@@ -38,7 +39,9 @@ class QuestionAdapter extends TypeAdapter<Question> {
       ..writeByte(3)
       ..write(obj.mosqueName)
       ..writeByte(4)
-      ..write(obj.isParagraph);
+      ..write(obj.isParagraph)
+      ..writeByte(5)
+      ..write(obj.dateOfAnswer);
   }
 
   @override

@@ -40,7 +40,7 @@ class _AddQuestionPageState extends State<AddQuestionPage> {
                       descriptionController.text,
                       false,
                       widget.mosqueName ?? "",
-                      isParagraph));
+                      isParagraph, null));
                   Navigator.pop(context);
                 }
               },

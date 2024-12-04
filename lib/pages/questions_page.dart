@@ -8,6 +8,7 @@ import 'package:masel/components/helper_functions.dart';
 import 'package:masel/components/question_view.dart';
 import 'package:masel/models/question_model.dart';
 import 'package:masel/components/settings.dart';
+import 'package:masel/pages/mosque_page.dart';
 import 'package:provider/provider.dart';
 
 enum QuestionsView { tableView, listView }
@@ -193,12 +194,40 @@ class _QuestionsPageState extends State<QuestionsPage> {
                                                       builder: (context) =>
                                                           EditQuestionPage(
                                                               context,
-                                                              questions,
+                                                              questions
+                                                                  .where((element) =>
+                                                              element.question.contains(
+                                                                  themeProvider.searchQuery) ||
+                                                                  element.description!.contains(
+                                                                      themeProvider.searchQuery) ||
+                                                                  element.mosqueName.contains(
+                                                                      themeProvider.searchQuery) ||
+                                                                  element.answered
+                                                                      .toString()
+                                                                      .contains(themeProvider
+                                                                      .searchQuery) // if nothing show all
+                                                                  ||
+                                                                  themeProvider.searchQuery.isEmpty)
+                                                                  .toList(),
                                                               index)));
                                             } else if (value == 1) {
                                               // Delete mosque
                                               deleteAQuestion(
-                                                  context, questions, index);
+                                                  context, questions
+                                                  .where((element) =>
+                                              element.question.contains(
+                                                  themeProvider.searchQuery) ||
+                                                  element.description!.contains(
+                                                      themeProvider.searchQuery) ||
+                                                  element.mosqueName.contains(
+                                                      themeProvider.searchQuery) ||
+                                                  element.answered
+                                                      .toString()
+                                                      .contains(themeProvider
+                                                      .searchQuery) // if nothing show all
+                                                  ||
+                                                  themeProvider.searchQuery.isEmpty)
+                                                  .toList(), index);
                                             }
                                           });
                                         },
@@ -259,7 +288,21 @@ class _QuestionsPageState extends State<QuestionsPage> {
                                                       index: index,
                                                       carouselController:
                                                           carouselController,
-                                                      questions: questions);
+                                                      questions: questions
+                                                          .where((element) =>
+                                                      element.question.contains(
+                                                          themeProvider.searchQuery) ||
+                                                          element.description!.contains(
+                                                              themeProvider.searchQuery) ||
+                                                          element.mosqueName.contains(
+                                                              themeProvider.searchQuery) ||
+                                                          element.answered
+                                                              .toString()
+                                                              .contains(themeProvider
+                                                              .searchQuery) // if nothing show all
+                                                          ||
+                                                          themeProvider.searchQuery.isEmpty)
+                                                          .toList());
                                                 }));
                                               },
                                             ),
@@ -391,11 +434,23 @@ class MyTable extends StatelessWidget {
                       children: question['mosques'].map<Widget>((mosque) {
                         return Row(
                           children: [
-                            Text(
-                              " - ${mosque['mosqueName']}",
-                              style: TextStyle(
-                                  color:
-                                      Theme.of(context).colorScheme.onSurface),
+                            GestureDetector(
+                              onTap: () {
+                                // open mosque page
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => MosquePage(
+                                        mosqueName: mosque['mosqueName']),
+                                  ),
+                                );
+                              },
+                              child: Text(
+                                " - ${mosque['mosqueName']}",
+                                style: TextStyle(
+                                    color:
+                                        Theme.of(context).colorScheme.onPrimaryContainer),
+                              ),
                             ),
                             SizedBox(width: 5),
                             Icon(
