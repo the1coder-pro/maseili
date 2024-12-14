@@ -23,11 +23,22 @@ class _AddingQuestionsDialogState extends State<AddingQuestionsDialog> {
   @override
   Widget build(BuildContext context) {
     final questionsBox = Hive.box<Question>('questions');
+    bool UniqueQuestionsBoxIsEmpty = filterUniqueQuestions(questionsBox.values.toList())
+        .where((question) {
+      // if question.question is in the mosque questions
+      return Hive.box<Question>('questions').values.toList().reversed.toList()
+          .where((element) =>
+      element.mosqueName ==
+          widget.widget.mosqueName)
+          .map((e) => e.question)
+          .contains(question.question) ==
+          false;
+    }).isEmpty;
     return Dialog(
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(10))),
       child: SizedBox(
-        width: 350,
+        width: 360,
         height: 220,
         child: Center(
           child: Padding(
@@ -39,12 +50,12 @@ class _AddingQuestionsDialogState extends State<AddingQuestionsDialog> {
                 Icon(Icons.add_comment_outlined, color: Theme.of(context).colorScheme.secondary),
                 const SizedBox(height: 10),
                 Padding(
-                  padding: const EdgeInsets.only(right: 20, left: 20),
+                  padding: const EdgeInsets.only(right: 15, left: 15),
                   child: Text(
                     "طريقة إضافة السؤال الى المسجد:",
-                    style: TextStyle(fontSize: 18),
+                    style: TextStyle(fontSize: 17),
                     textDirection: TextDirection.rtl,
-                    textAlign: TextAlign.right,
+                    textAlign: TextAlign.center,
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -53,12 +64,14 @@ class _AddingQuestionsDialogState extends State<AddingQuestionsDialog> {
                   children: [
                     Expanded(
                       child: FilledButton.tonal(
+
+
                           style: ButtonStyle(
                               shape: WidgetStatePropertyAll(
                                   RoundedRectangleBorder(
                                       borderRadius: BorderRadius.all(
                                           Radius.circular(10))))),
-                          onPressed: () {
+                          onPressed: UniqueQuestionsBoxIsEmpty ? null : () {
                             Navigator.pop(context);
                             var questionsList =
                                 Hive.box<Question>('questions').values.toList().reversed.toList();
@@ -67,41 +80,7 @@ class _AddingQuestionsDialogState extends State<AddingQuestionsDialog> {
                                 builder: (context) {
                                   return Directionality(
                                     textDirection: TextDirection.rtl,
-                                    child: (filterUniqueQuestions(
-                                                questionsBox.values.toList())
-                                            .where((question) {
-                                      // if question.question is in the mosque questions
-                                      return questionsList
-                                              .where((element) =>
-                                                  element.mosqueName ==
-                                                  widget.widget.mosqueName)
-                                              .map((e) => e.question)
-                                              .contains(question.question) ==
-                                          false;
-                                    }).isEmpty)
-                                        ? AlertDialog(
-                                            title: Text("إستيراد سؤال"),
-                                            content: Padding(
-                                              padding:
-                                                  const EdgeInsets.all(8.0),
-                                              child: Text(
-                                                "* لا توجد مسائل لإضافتها",
-                                                style: TextStyle(
-                                                    color: Theme.of(context)
-                                                        .colorScheme
-                                                        .error),
-                                              ),
-                                            ),
-                                            actions: [
-                                              FilledButton(
-                                                onPressed: () {
-                                                  Navigator.pop(context);
-                                                },
-                                                child: const Text("حسنا"),
-                                              ),
-                                            ],
-                                          )
-                                        : AlertDialog(
+                                    child: AlertDialog(
                                             title: Text("إستيراد سؤال"),
                                             content: Column(
                                               mainAxisSize: MainAxisSize.min,
@@ -231,6 +210,15 @@ class _AddingQuestionsDialogState extends State<AddingQuestionsDialog> {
                     ),
                   ],
                 ),
+                if (UniqueQuestionsBoxIsEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 6),
+                    child: Text(
+                    "* لا توجد اسئلة لاستيرادها.",
+                    style: TextStyle(fontSize: 16),
+                    textDirection: TextDirection.rtl,
+                    textAlign: TextAlign.right,),
+                  )
               ],
             ),
           ),

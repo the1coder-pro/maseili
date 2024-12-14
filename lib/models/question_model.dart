@@ -43,7 +43,10 @@ class Question extends HiveObject {
         answered = json['answered'],
         mosqueName = json['mosqueName'],
         isParagraph = json['isParagraph'],
-        dateOfAnswer = json['dateOfAnswer'];
+        // check before parsing
+
+
+        dateOfAnswer = json['dateOfAnswer'] == null ? null : json['dateOfAnswer'].toString().isNotEmpty ?  DateTime.parse(json['dateOfAnswer']!) : null; // 2024-12-08 14:37:01.255625 like format
 
   // toJson
   Map<String, dynamic> toJson() => {
@@ -52,6 +55,6 @@ class Question extends HiveObject {
         'answered': answered,
         'mosqueName': mosqueName,
         'isParagraph': isParagraph,
-        'dateOfAnswer': dateOfAnswer
+        'dateOfAnswer': dateOfAnswer?.toString()
       };
 }

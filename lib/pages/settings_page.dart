@@ -9,7 +9,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-String applicationVersion = "0.0.9";
+String applicationVersion = "0.1.0";
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -84,6 +84,26 @@ class _SettingsPageState extends State<SettingsPage> {
           appBar: AppBar(
             title: const Text("الإعدادات"),
             centerTitle: true,
+            // actions: [
+            //   IconButton(onPressed: (){
+            //     // test the fromJson and toJson methods
+            //     String json = '[{"question":"ما هو العلم؟","description":"العلم هو العلم","answered":false,"mosqueName":"المسجد","isParagraph":false, "dateOfAnswer": ""}]';
+            //     var map = jsonDecode(json);
+            //     Question question = Question.fromJson(map[0]);
+            //     print("fromJson: $question");
+            //     print("toJson: ${question.toJson()}");
+            //     // print each alone
+            //     print("question: ${question.question}");
+            //     print("description: ${question.description}");
+            //     print("answered: ${question.answered}");
+            //     print("mosqueName: ${question.mosqueName}");
+            //     print("isParagraph: ${question.isParagraph}");
+            //     print("dateOfAnswer: ${question.dateOfAnswer}");
+            //     // print the date in other style
+            //     print("dateOfAnswer: ${question.dateOfAnswer?.year}-${question.dateOfAnswer?.month}-${question.dateOfAnswer?.day}");
+            //
+            //   }, icon: Icon(Icons.warning))
+            // ],
           ),
           body: Padding(
             padding: const EdgeInsets.all(10),
@@ -184,8 +204,10 @@ class _SettingsPageState extends State<SettingsPage> {
 
 
 class SelectBackupFile extends StatefulWidget {
+  const SelectBackupFile({super.key});
+
   @override
-  _SelectBackupFileState createState() => _SelectBackupFileState();
+  State<SelectBackupFile> createState() => _SelectBackupFileState();
 }
 
 class _SelectBackupFileState extends State<SelectBackupFile> {
