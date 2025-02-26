@@ -98,6 +98,7 @@ flutter:
      - assets/background_light.png
      - assets/background_dark.png
      - assets/background_new.png
+     - assets/background_new_2.png
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

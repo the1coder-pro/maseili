@@ -3,14 +3,14 @@ import 'package:masel/pages/mosques_page.dart';
 import 'package:masel/pages/questions_page.dart';
 import 'package:masel/pages/settings_page.dart';
 
-class MainPage extends StatefulWidget {
-  const MainPage({super.key});
+class LandingPage extends StatefulWidget {
+  const LandingPage({super.key});
 
   @override
-  State<MainPage> createState() => _MainPageState();
+  State<LandingPage> createState() => _LandingPageState();
 }
 
-class _MainPageState extends State<MainPage> {
+class _LandingPageState extends State<LandingPage> {
   int _selectedIndex = 0;
 
   Widget selectedPage(int index) {
@@ -25,7 +25,6 @@ class _MainPageState extends State<MainPage> {
         return const MosquesPage();
     }
   }
-  
 
   @override
   Widget build(BuildContext context) {
@@ -36,9 +35,8 @@ class _MainPageState extends State<MainPage> {
           body: selectedPage(_selectedIndex),
           bottomNavigationBar: NavigationBar(
             backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
-            indicatorColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-
-                
+            indicatorColor:
+                Theme.of(context).colorScheme.surfaceContainerHighest,
             selectedIndex: _selectedIndex,
             onDestinationSelected: (int index) {
               setState(() {
@@ -53,16 +51,14 @@ class _MainPageState extends State<MainPage> {
                 label: 'المساجد',
               ),
               NavigationDestination(
-                selectedIcon: Icon(Icons.question_answer,
+                selectedIcon: Icon(Icons.category,
                     color: Theme.of(context).colorScheme.inverseSurface),
-
-                icon: Icon(Icons.question_answer_outlined),
-                label: 'المسائل',
+                icon: Icon(Icons.category_outlined),
+                label: 'التصنيفات',
               ),
               NavigationDestination(
                 selectedIcon: Icon(Icons.settings,
                     color: Theme.of(context).colorScheme.inverseSurface),
-
                 icon: Icon(Icons.settings_outlined),
                 label: 'الإعدادات',
               ),

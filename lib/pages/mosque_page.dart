@@ -8,7 +8,7 @@ import 'package:masel/dialogs/delete_dialog.dart';
 import 'package:masel/pages/paragraph_page.dart';
 import 'package:masel/models/question_model.dart';
 import 'package:intl/intl.dart' as intl;
-import 'package:masel/components/settings.dart';
+import 'package:masel/components/preferences.dart';
 import 'package:provider/provider.dart';
 
 enum PageMode { normal, select, delete }
@@ -31,10 +31,9 @@ class _MosquePageState extends State<MosquePage> {
 
   PageMode pageMode = PageMode.normal;
 
-
   @override
   Widget build(BuildContext context) {
-    final themeMode = Provider.of<DarkThemeProvider>(context);
+    final themeMode = Provider.of<GeneralPrefrencesProvider>(context);
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
@@ -52,6 +51,7 @@ class _MosquePageState extends State<MosquePage> {
               leading: pageMode == PageMode.normal
                   ? null
                   : IconButton(
+                      tooltip: "إلغاء",
                       icon: const Icon(Icons.close),
                       color: pageMode == PageMode.normal
                           ? Theme.of(context).colorScheme.onSurface
@@ -65,6 +65,7 @@ class _MosquePageState extends State<MosquePage> {
               actions: pageMode == PageMode.select
                   ? [
                       IconButton(
+                        tooltip: "نسخ المسائل المحددة",
                         icon: const Icon(Icons.copy_all_outlined),
                         color: pageMode == PageMode.normal
                             ? Theme.of(context).colorScheme.onSurface
@@ -91,6 +92,7 @@ class _MosquePageState extends State<MosquePage> {
                   : pageMode == PageMode.delete
                       ? [
                           IconButton(
+                            tooltip: "حذف المسائل المحددة",
                             icon: const Icon(Icons.delete_outlined),
                             color: pageMode == PageMode.normal
                                 ? Theme.of(context).colorScheme.onSurface
@@ -142,46 +144,49 @@ class _MosquePageState extends State<MosquePage> {
                           )
                         ]
                       : [
-                          PopupMenuButton(itemBuilder: (context) {
-                            return const <PopupMenuEntry>[
-                              PopupMenuItem(
-                                value: 0,
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Icon(Icons.copy_outlined),
-                                    Text("نسخ"),
-                                  ],
-                                ),
-                              ),
-                              PopupMenuItem(
-                                value: 1,
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Icon(Icons.delete_outlined),
-                                    Text("حذف"),
-                                  ],
-                                ),
-                              ),
-                            ];
-                          }, onSelected: (value) {
-                            if (value == 0) {
-                              setState(() {
-                                selectedMosques.clear();
-                                selectedQuestion.clear();
-                                pageMode = PageMode.select;
-                              });
-                            } else if (value == 1) {
-                              setState(() {
-                                selectedMosques.clear();
-                                selectedQuestion.clear();
-                                pageMode = PageMode.delete;
-                              });
-                            }
-                          }),
+                          PopupMenuButton(
+                              tooltip: "المزيد",
+                              itemBuilder: (context) {
+                                return const <PopupMenuEntry>[
+                                  PopupMenuItem(
+                                    value: 0,
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Icon(Icons.copy_outlined),
+                                        Text("نسخ"),
+                                      ],
+                                    ),
+                                  ),
+                                  PopupMenuItem(
+                                    value: 1,
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Icon(Icons.delete_outlined),
+                                        Text("حذف"),
+                                      ],
+                                    ),
+                                  ),
+                                ];
+                              },
+                              onSelected: (value) {
+                                if (value == 0) {
+                                  setState(() {
+                                    selectedMosques.clear();
+                                    selectedQuestion.clear();
+                                    pageMode = PageMode.select;
+                                  });
+                                } else if (value == 1) {
+                                  setState(() {
+                                    selectedMosques.clear();
+                                    selectedQuestion.clear();
+                                    pageMode = PageMode.delete;
+                                  });
+                                }
+                              }),
                         ]),
           body: Center(
               child: Column(
@@ -193,7 +198,9 @@ class _MosquePageState extends State<MosquePage> {
                     var questions = box.values
                         .where((question) =>
                             question.mosqueName == widget.mosqueName)
-                        .toList().reversed.toList();
+                        .toList()
+                        .reversed
+                        .toList();
                     if (questions.isEmpty) {
                       return const Center(
                         child: Text("لا توجد مسائل",
@@ -219,7 +226,6 @@ class _MosquePageState extends State<MosquePage> {
                                         .colorScheme
                                         .tertiaryContainer,
                                     label: Text(
-
                                       questions[index].isParagraph == true
                                           ? "خطبة"
                                           : "مسألة",
@@ -247,8 +253,9 @@ class _MosquePageState extends State<MosquePage> {
                         if (questions[index].isParagraph == true) {
                           return ListTile(
                             tileColor: themeMode.darkTheme
-                                ? const Color(0xFF83d0da).withOpacity(0.2)
-                                : const Color(0xFF83d0da).withOpacity(0.4),
+                                ? const Color(0xFF83d0da).withValues(alpha: 0.2)
+                                : const Color(0xFF83d0da)
+                                    .withValues(alpha: 0.4),
                             leading: Icon(
                               questions[index].answered
                                   ? Icons.check_circle_outline
@@ -257,8 +264,9 @@ class _MosquePageState extends State<MosquePage> {
                             ),
                             trailing: const Icon(Icons.article_outlined),
                             splashColor: themeMode.darkTheme
-                                ? const Color(0xFF83d0da).withOpacity(0.2)
-                                : const Color(0xFF83d0da).withOpacity(0.4),
+                                ? const Color(0xFF83d0da).withValues(alpha: 0.2)
+                                : const Color(0xFF83d0da)
+                                    .withValues(alpha: 0.4),
                             onTap: () {
                               Navigator.push(context, MaterialPageRoute(
                                 builder: (context) {
@@ -314,12 +322,24 @@ class _MosquePageState extends State<MosquePage> {
                                   const EdgeInsets.only(top: 5, bottom: 10),
                               child: CheckboxListTile(
                                 value: questions[index].answered,
-
                                 title: const Text("تم شرحه"),
                                 subtitle: questions[index].answered
                                     ? Text(
-                                        intl.DateFormat('E (h:mm a) yyyy/MM/dd').format(questions[index].dateOfAnswer!).replaceFirst("PM", "مساءً").replaceFirst("AM", "صباحًا").replaceFirst("Sun", "الأحد").replaceFirst("Mon", "الإثنين").replaceFirst("Tue", "الثلاثاء").replaceFirst("Wed", "الأربعاء").replaceFirst("Thu", "الخميس").replaceFirst("Fri", "الجمعة").replaceFirst("Sat", "السبت"),
-                                textDirection: TextDirection.rtl, style: TextStyle(fontSize: 15),)
+                                        intl.DateFormat('E (h:mm a) yyyy/MM/dd')
+                                            .format(
+                                                questions[index].dateOfAnswer!)
+                                            .replaceFirst("PM", "مساءً")
+                                            .replaceFirst("AM", "صباحًا")
+                                            .replaceFirst("Sun", "الأحد")
+                                            .replaceFirst("Mon", "الإثنين")
+                                            .replaceFirst("Tue", "الثلاثاء")
+                                            .replaceFirst("Wed", "الأربعاء")
+                                            .replaceFirst("Thu", "الخميس")
+                                            .replaceFirst("Fri", "الجمعة")
+                                            .replaceFirst("Sat", "السبت"),
+                                        textDirection: TextDirection.rtl,
+                                        style: TextStyle(fontSize: 15),
+                                      )
                                     : null,
                                 onChanged: (value) {
                                   // show dialog to confirm
@@ -330,9 +350,10 @@ class _MosquePageState extends State<MosquePage> {
                                         textDirection: TextDirection.rtl,
                                         child: AlertDialog(
                                           icon: const Icon(Icons.check),
-                                          title:  Text("تأكيد ${questions[index].dateOfAnswer != null ? 'عدم': ''} الشرح"),
+                                          title: Text(
+                                              "تأكيد ${questions[index].dateOfAnswer != null ? 'عدم' : ''} الشرح"),
                                           content: Text(
-                                              "هل أنت متأكد من ${questions[index].dateOfAnswer != null ? 'عدم ': ''}شرح هذه المسألة؟"),
+                                              "هل أنت متأكد من ${questions[index].dateOfAnswer != null ? 'عدم ' : ''}شرح هذه المسألة؟"),
                                           actions: [
                                             TextButton(
                                               onPressed: () {
@@ -343,7 +364,8 @@ class _MosquePageState extends State<MosquePage> {
                                             FilledButton(
                                               onPressed: () {
                                                 Navigator.pop(context);
-                                                questions[index].answered = value!;
+                                                questions[index].answered =
+                                                    value!;
                                                 questions[index].dateOfAnswer =
                                                     DateTime.now();
                                                 questions[index].save();
@@ -435,7 +457,6 @@ class _MosquePageState extends State<MosquePage> {
                   : FloatingActionButton(
                       elevation: 3,
                       onPressed: () {
-                 
                         showDialog(
                             context: context,
                             builder: (context) {
@@ -448,5 +469,3 @@ class _MosquePageState extends State<MosquePage> {
     );
   }
 }
-
-

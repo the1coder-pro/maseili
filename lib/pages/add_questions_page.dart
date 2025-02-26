@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:masel/models/question_model.dart';
+import 'package:masel/models/tag_model.dart';
 
 class AddQuestionPage extends StatefulWidget {
   const AddQuestionPage({super.key, this.mosqueName});
@@ -16,8 +17,22 @@ class _AddQuestionPageState extends State<AddQuestionPage> {
   final TextEditingController descriptionController = TextEditingController();
 
   bool isParagraph = false;
+
+  // get the list of tags from the tags box
+  Box<Tag> tagsBox = Hive.box<Tag>('tags');
+  List<Tag> allTags = [];
+  List<String> selectedTags = [];
+
+  @override
+  void initState() {
+    allTags = tagsBox.values.toList();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
+    // get all tags from the tags box
+
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
@@ -35,12 +50,16 @@ class _AddQuestionPageState extends State<AddQuestionPage> {
               onPressed: () {
                 if (questionController.text.isNotEmpty) {
                   Box<Question> questionsBox = Hive.box<Question>('questions');
-                  questionsBox.add(Question(
+                  var question = Question(
                       questionController.text,
                       descriptionController.text,
                       false,
                       widget.mosqueName ?? "",
-                      isParagraph, null));
+                      isParagraph,
+                      null);
+                  question.tags = selectedTags;
+                  questionsBox.add(question);
+
                   Navigator.pop(context);
                 }
               },
@@ -62,15 +81,15 @@ class _AddQuestionPageState extends State<AddQuestionPage> {
               const SizedBox(height: 10),
               TextField(
                 controller: descriptionController,
-                minLines: 2,
-                maxLines: 5,
+                minLines: 4,
+                maxLines: 7,
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(),
                   hintText: "الوصف",
                 ),
               ),
-              const SizedBox(height: 5),
-              CheckboxListTile(
+              const SizedBox(height: 10),
+              SwitchListTile(
                   title: const Text(
                     "هل هذه خطبة؟",
                     textDirection: TextDirection.rtl,
@@ -80,9 +99,31 @@ class _AddQuestionPageState extends State<AddQuestionPage> {
                   value: isParagraph,
                   onChanged: (value) {
                     setState(() {
-                      isParagraph = value!;
+                      isParagraph = value;
                     });
-                  })
+                  }),
+
+              // show a list of chips to select from as tags
+              Wrap(
+                children: allTags
+                    .map((tag) => Padding(
+                          padding: const EdgeInsets.all(4),
+                          child: ChoiceChip(
+                            label: Text(tag.name),
+                            selected: selectedTags.contains(tag.name),
+                            onSelected: (value) {
+                              setState(() {
+                                if (value) {
+                                  selectedTags.add(tag.name);
+                                } else {
+                                  selectedTags.remove(tag.name);
+                                }
+                              });
+                            },
+                          ),
+                        ))
+                    .toList(),
+              ),
             ],
           ),
         ),
@@ -189,4 +230,3 @@ class _EditQuestionPageState extends State<EditQuestionPage> {
     );
   }
 }
-

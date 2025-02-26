@@ -2,14 +2,14 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:masel/components/settings.dart';
+import 'package:masel/components/preferences.dart';
 import 'package:masel/models/mosque_model.dart';
 import 'package:masel/models/question_model.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-String applicationVersion = "0.1.0";
+String applicationVersion = "0.1.1";
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -36,7 +36,7 @@ class _SettingsPageState extends State<SettingsPage> {
         .toList();
 
     String json = jsonEncode(map);
-    print("json: $json");
+    debugPrint("json: $json");
     // Directory dir = await _getDirectory();
     final directory = await getExternalStorageDirectory();
 
@@ -52,32 +52,21 @@ class _SettingsPageState extends State<SettingsPage> {
     File backupFile = File(path);
     await backupFile.writeAsString(json);
 
-    print("The file was written to: $path");
+    debugPrint("The file was written to: $path");
     // scaffold to show the user that the backup is done and have a button to open the folder
+
+    if (!mounted) return;
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('تم تصدير البيانات بنجاح.'),
-
       ),
     );
   }
 
-  Future<Directory> _getDirectory() async {
-    const String pathExt =
-        'Masel/'; //This is the name of the folder where the backup is stored
-    Directory newDirectory = Directory(
-        '/storage/emulated/0/$pathExt'); //Change this to any desired location where the folder will be created
-    if (await newDirectory.exists() == false) {
-      return newDirectory.create(recursive: true);
-    }
-    return newDirectory;
-  }
-
-
-
   @override
   Widget build(BuildContext context) {
-    final themeMode = Provider.of<DarkThemeProvider>(context);
+    final generalProvider = Provider.of<GeneralPrefrencesProvider>(context);
     return Directionality(
         textDirection: TextDirection.rtl,
         child: Scaffold(
@@ -114,42 +103,62 @@ class _SettingsPageState extends State<SettingsPage> {
                   child: ListView(
                     children: [
                       SwitchListTile(
-                          title: const Text("الوضع الداكن"),
-                          value: themeMode.darkTheme,
+                          title: const Text("الوضع الداكن",
+                              style: TextStyle(fontSize: 24)),
+                          value: generalProvider.darkTheme,
                           onChanged: (value) {
-                            themeMode.darkTheme = value;
+                            generalProvider.darkTheme = value;
                           }),
                       // export data to a json file
                       const SizedBox(height: 10),
-                      Card.outlined(
-                          child: Column(children: [
-                        ListTile(
-                          trailing: const Icon(Icons.backup_outlined),
-                          title: const Text("تصدير البيانات"),
-                          onTap: () async {
-                            // if (await Permission.storage.request().isGranted) {
-                            await createBackup();
+                      SwitchListTile(
+                          value: generalProvider.showAnswer,
+                          onChanged: (value) {
+                            generalProvider.showAnswer = value;
                           },
-                        ),
-                        const Divider(),
+                          subtitle: Text("في صفحة الأسئلة",
+                              style: TextStyle(fontSize: 15)),
+                          title: Text(
+                            "إظهار الإجابة",
+                            style: TextStyle(fontSize: 24),
+                          )),
 
-                      ListTile(
-                        splashColor: Theme.of(context).colorScheme.surface,
-                        trailing: const Icon(Icons.restore_outlined),
-                        title: const Text("استيراد البيانات"),
-                        onTap: () async {
-                         Navigator.push(context, MaterialPageRoute(builder: (context) => Directionality(
-                           textDirection: TextDirection.rtl,
-                           child: Scaffold(
-                               appBar: AppBar(
-                                 title: Text("أختر النسخة الإحتياطية"),
-                               ),
-                               body: SelectBackupFile()),
-                         )));
-                        },
+                      Padding(
+                        padding: const EdgeInsets.only(right: 10, left: 10),
+                        child: Card.outlined(
+                            child: Column(children: [
+                          ListTile(
+                            trailing: const Icon(Icons.backup_outlined),
+                            title: const Text("تصدير البيانات"),
+                            onTap: () async {
+                              // if (await Permission.storage.request().isGranted) {
+                              await createBackup();
+                            },
+                          ),
+                          const Divider(),
+
+                          ListTile(
+                            splashColor: Theme.of(context).colorScheme.surface,
+                            trailing: const Icon(Icons.restore_outlined),
+                            title: const Text("استيراد البيانات"),
+                            onTap: () async {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => Directionality(
+                                            textDirection: TextDirection.rtl,
+                                            child: Scaffold(
+                                                appBar: AppBar(
+                                                  title: Text(
+                                                      "أختر النسخة الإحتياطية"),
+                                                ),
+                                                body: SelectBackupFile()),
+                                          )));
+                            },
+                          ),
+                          // ),
+                        ])),
                       ),
-                        // ),
-                      ])),
                       ListTile(
                         leading: const Icon(Icons.open_in_new),
                         title: const Text("الذهاب الى المتجر"),
@@ -178,7 +187,7 @@ class _SettingsPageState extends State<SettingsPage> {
                             color: Theme.of(context)
                                 .colorScheme
                                 .onSurface
-                                .withOpacity(0.8))),
+                                .withValues(alpha: 0.8))),
                   ),
                 ),
                 Padding(
@@ -192,7 +201,7 @@ class _SettingsPageState extends State<SettingsPage> {
                             color: Theme.of(context)
                                 .colorScheme
                                 .onSurface
-                                .withOpacity(0.8))),
+                                .withValues(alpha: 0.8))),
                   ),
                 )
               ],
@@ -201,7 +210,6 @@ class _SettingsPageState extends State<SettingsPage> {
         ));
   }
 }
-
 
 class SelectBackupFile extends StatefulWidget {
   const SelectBackupFile({super.key});
@@ -230,6 +238,7 @@ class _SelectBackupFileState extends State<SelectBackupFile> {
         });
       }
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to access external storage: $e')),
       );
@@ -248,42 +257,40 @@ class _SelectBackupFileState extends State<SelectBackupFile> {
       _selectedFilePath = filePath;
     });
 
-
     Navigator.pop(context);
     await restoreBackup(filePath);
   }
-    Future<void> restoreBackup(String filePath) async {
 
-        File files = File(filePath);
+  Future<void> restoreBackup(String filePath) async {
+    File files = File(filePath);
 
-        Hive.box<Question>('questions').clear();
-        Hive.box<Mosque>('mosques').clear();
-        var map = jsonDecode(await files.readAsString());
-        for (var i = 0; i < map.length; i++) {
-          Question question = Question.fromJson(map[i]);
+    Hive.box<Question>('questions').clear();
+    Hive.box<Mosque>('mosques').clear();
+    var map = jsonDecode(await files.readAsString());
+    for (var i = 0; i < map.length; i++) {
+      Question question = Question.fromJson(map[i]);
 
-          Hive.box<Question>('questions').add(question);
-        }
-
-        var mosqueNames = [];
-        for (Question question
-        in Hive.box<Question>('questions').values.toList()) {
-          if (question.mosqueName.isNotEmpty) {
-            if (!mosqueNames.contains(question.mosqueName)) {
-              mosqueNames.add(question.mosqueName);
-            }
-          }
-        }
-        Hive.box<Mosque>('mosques')
-            .addAll(mosqueNames.map((name) => Mosque(name)).toList());
-
-        print("MosqueNames: $mosqueNames");
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('تم إستيراد البيانات بنجاح.')),
-        );
-
+      Hive.box<Question>('questions').add(question);
     }
+
+    var mosqueNames = [];
+    for (Question question in Hive.box<Question>('questions').values.toList()) {
+      if (question.mosqueName.isNotEmpty) {
+        if (!mosqueNames.contains(question.mosqueName)) {
+          mosqueNames.add(question.mosqueName);
+        }
+      }
+    }
+    Hive.box<Mosque>('mosques')
+        .addAll(mosqueNames.map((name) => Mosque(name)).toList());
+
+    debugPrint("MosqueNames: $mosqueNames");
+
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('تم إستيراد البيانات بنجاح.')),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -299,7 +306,6 @@ class _SelectBackupFileState extends State<SelectBackupFile> {
                       return ListTile(
                         title: Text(file.path.split('/').last),
                         leading: Icon(Icons.folder),
-
                         onTap: () => _navigateToDirectory(file as Directory),
                       );
                     } else {

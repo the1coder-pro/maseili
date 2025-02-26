@@ -1,13 +1,10 @@
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:masel/components/helper_functions.dart';
 import 'package:masel/dialogs/delete_mosque_dialog.dart';
 import 'package:masel/dialogs/edit_mosque_dialog.dart';
 import 'package:masel/models/mosque_model.dart';
 import 'package:masel/pages/mosque_page.dart';
-
-import '../models/question_model.dart';
 
 enum ViewType { gridView, listView }
 
@@ -48,9 +45,6 @@ class _MosquesPageState extends State<MosquesPage> {
                     setState(() {
                       selected = {value.first};
                     });
-
-
-
                   },
                   showSelectedIcon: false,
                   segments: const [

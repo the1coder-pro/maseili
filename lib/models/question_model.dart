@@ -23,6 +23,9 @@ class Question extends HiveObject {
   @HiveField(5)
   DateTime? dateOfAnswer;
 
+  @HiveField(6)
+  List<String>? tags = [];
+
   Question(this.question, this.description, this.answered, this.mosqueName,
       this.isParagraph, this.dateOfAnswer);
 
@@ -43,10 +46,15 @@ class Question extends HiveObject {
         answered = json['answered'],
         mosqueName = json['mosqueName'],
         isParagraph = json['isParagraph'],
+
         // check before parsing
 
-
-        dateOfAnswer = json['dateOfAnswer'] == null ? null : json['dateOfAnswer'].toString().isNotEmpty ?  DateTime.parse(json['dateOfAnswer']!) : null; // 2024-12-08 14:37:01.255625 like format
+        tags = json['tags'] == null ? [] : List<String>.from(json['tags']),
+        dateOfAnswer = json['dateOfAnswer'] == null
+            ? null
+            : json['dateOfAnswer'].toString().isNotEmpty
+                ? DateTime.parse(json['dateOfAnswer']!)
+                : null; // 2024-12-08 14:37:01.255625 like format
 
   // toJson
   Map<String, dynamic> toJson() => {
@@ -55,6 +63,7 @@ class Question extends HiveObject {
         'answered': answered,
         'mosqueName': mosqueName,
         'isParagraph': isParagraph,
-        'dateOfAnswer': dateOfAnswer?.toString()
+        'dateOfAnswer': dateOfAnswer?.toString(),
+        'tags': tags,
       };
 }

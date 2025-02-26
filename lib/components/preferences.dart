@@ -1,7 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+// make a class for the general preferences like show or hide the answer in questions page in list
+class GeneralPreference {
+  static const SHOW_ANSWER = "SHOWANSWER";
 
+  setAnswerVisibility(bool value) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool(SHOW_ANSWER, value);
+  }
+
+  Future<bool> getAnswerVisibility() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(SHOW_ANSWER) ?? false;
+  }
+}
 
 class DarkThemePreference {
   static const THEME_STATUS = "THEMESTATUS";
@@ -17,7 +30,7 @@ class DarkThemePreference {
   }
 }
 
-class DarkThemeProvider with ChangeNotifier {
+class GeneralPrefrencesProvider with ChangeNotifier {
   DarkThemePreference darkThemePreference = DarkThemePreference();
   bool _darkTheme = false;
 
@@ -35,6 +48,17 @@ class DarkThemeProvider with ChangeNotifier {
 
   set searchQuery(String value) {
     _searchQuery = value;
+    notifyListeners();
+  }
+
+  GeneralPreference generalPreference = GeneralPreference();
+  bool _showAnswer = true;
+
+  bool get showAnswer => _showAnswer;
+
+  set showAnswer(bool value) {
+    _showAnswer = value;
+    generalPreference.setAnswerVisibility(value);
     notifyListeners();
   }
 }

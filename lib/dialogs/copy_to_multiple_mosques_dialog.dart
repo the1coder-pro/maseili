@@ -56,7 +56,7 @@ class _CopyToMultipleMosquesDialogState
                                 "المسألة موجودة في هذا المسجد",
                                 style: TextStyle(
                                   fontSize: 14,
-                                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8)),
+                                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.8)),
                               )
                             : null,
                     value: selectedMosques.contains(mosque.name),

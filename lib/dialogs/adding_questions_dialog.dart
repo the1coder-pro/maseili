@@ -23,15 +23,18 @@ class _AddingQuestionsDialogState extends State<AddingQuestionsDialog> {
   @override
   Widget build(BuildContext context) {
     final questionsBox = Hive.box<Question>('questions');
-    bool UniqueQuestionsBoxIsEmpty = filterUniqueQuestions(questionsBox.values.toList())
-        .where((question) {
+    bool uniqueQuestionsBoxIsEmpty =
+        filterUniqueQuestions(questionsBox.values.toList()).where((question) {
       // if question.question is in the mosque questions
-      return Hive.box<Question>('questions').values.toList().reversed.toList()
-          .where((element) =>
-      element.mosqueName ==
-          widget.widget.mosqueName)
-          .map((e) => e.question)
-          .contains(question.question) ==
+      return Hive.box<Question>('questions')
+              .values
+              .toList()
+              .reversed
+              .toList()
+              .where(
+                  (element) => element.mosqueName == widget.widget.mosqueName)
+              .map((e) => e.question)
+              .contains(question.question) ==
           false;
     }).isEmpty;
     return Dialog(
@@ -47,7 +50,8 @@ class _AddingQuestionsDialogState extends State<AddingQuestionsDialog> {
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.add_comment_outlined, color: Theme.of(context).colorScheme.secondary),
+                Icon(Icons.add_comment_outlined,
+                    color: Theme.of(context).colorScheme.secondary),
                 const SizedBox(height: 10),
                 Padding(
                   padding: const EdgeInsets.only(right: 15, left: 15),
@@ -64,23 +68,27 @@ class _AddingQuestionsDialogState extends State<AddingQuestionsDialog> {
                   children: [
                     Expanded(
                       child: FilledButton.tonal(
-
-
                           style: ButtonStyle(
                               shape: WidgetStatePropertyAll(
                                   RoundedRectangleBorder(
                                       borderRadius: BorderRadius.all(
                                           Radius.circular(10))))),
-                          onPressed: UniqueQuestionsBoxIsEmpty ? null : () {
-                            Navigator.pop(context);
-                            var questionsList =
-                                Hive.box<Question>('questions').values.toList().reversed.toList();
-                            showDialog(
-                                context: context,
-                                builder: (context) {
-                                  return Directionality(
-                                    textDirection: TextDirection.rtl,
-                                    child: AlertDialog(
+                          onPressed: uniqueQuestionsBoxIsEmpty
+                              ? null
+                              : () {
+                                  Navigator.pop(context);
+                                  var questionsList =
+                                      Hive.box<Question>('questions')
+                                          .values
+                                          .toList()
+                                          .reversed
+                                          .toList();
+                                  showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return Directionality(
+                                          textDirection: TextDirection.rtl,
+                                          child: AlertDialog(
                                             title: Text("إستيراد سؤال"),
                                             content: Column(
                                               mainAxisSize: MainAxisSize.min,
@@ -105,7 +113,8 @@ class _AddingQuestionsDialogState extends State<AddingQuestionsDialog> {
                                                         false,
                                                         widget
                                                             .widget.mosqueName,
-                                                        question.isParagraph, null);
+                                                        question.isParagraph,
+                                                        null);
                                                   },
                                                   // retrieve questions from questions page to add to this mosque
                                                   items: filterUniqueQuestions(
@@ -129,12 +138,14 @@ class _AddingQuestionsDialogState extends State<AddingQuestionsDialog> {
                                                       alignment:
                                                           Alignment.center,
                                                       value: question,
-                                                      child: Text(
-                                                        question.question,
-                                                        style: TextStyle(
-                                                            fontSize: 16,
-                                                            fontFamily:
-                                                                "Rubik"),
+                                                      child: Center(
+                                                        child: Text(
+                                                          question.question,
+                                                          style: TextStyle(
+                                                              fontSize: 16,
+                                                              fontFamily:
+                                                                  "Rubik"),
+                                                        ),
                                                       ),
                                                     );
                                                   }).toList(),
@@ -166,9 +177,9 @@ class _AddingQuestionsDialogState extends State<AddingQuestionsDialog> {
                                               ),
                                             ],
                                           ),
-                                  );
-                                });
-                          },
+                                        );
+                                      });
+                                },
                           child: Padding(
                             padding: const EdgeInsets.all(20),
                             child: Column(
@@ -210,14 +221,18 @@ class _AddingQuestionsDialogState extends State<AddingQuestionsDialog> {
                     ),
                   ],
                 ),
-                if (UniqueQuestionsBoxIsEmpty)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 6),
-                    child: Text(
-                    "* لا توجد اسئلة لاستيرادها.",
-                    style: TextStyle(fontSize: 16),
-                    textDirection: TextDirection.rtl,
-                    textAlign: TextAlign.right,),
+                if (uniqueQuestionsBoxIsEmpty)
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 10),
+                      child: Text(
+                        "* لا توجد اسئلة يمكن استيرادها.",
+                        style: TextStyle(fontSize: 16),
+                        textDirection: TextDirection.rtl,
+                        textAlign: TextAlign.right,
+                      ),
+                    ),
                   )
               ],
             ),

@@ -1,25 +1,26 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-import 'package:masel/pages/main_page.dart';
+import 'package:masel/models/tag_model.dart';
+import 'package:masel/pages/landing_page.dart';
 import 'package:masel/models/mosque_model.dart';
 import 'package:masel/models/question_model.dart';
-import 'package:masel/components/settings.dart';
-import 'package:masel/components/theme.dart';
+import 'package:masel/components/preferences.dart';
 import 'package:masel/theme.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   await Hive.initFlutter();
   Hive.registerAdapter<Mosque>(MosqueAdapter());
   Hive.registerAdapter<Question>(QuestionAdapter());
+  Hive.registerAdapter<Tag>(TagAdapter());
   await Hive.openBox<Mosque>('mosques');
   await Hive.openBox<Question>('questions');
+  await Hive.openBox<Tag>('tags');
 
   runApp(const MyApp());
 }
-
 
 const textTheme = TextTheme(
   displayLarge:
@@ -52,7 +53,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  DarkThemeProvider themeChangeProvider = DarkThemeProvider();
+  GeneralPrefrencesProvider themeChangeProvider = GeneralPrefrencesProvider();
 
   @override
   void initState() {
@@ -63,14 +64,16 @@ class _MyAppState extends State<MyApp> {
   void getCurrentAppTheme() async {
     themeChangeProvider.darkTheme =
         await themeChangeProvider.darkThemePreference.getTheme();
+
+    themeChangeProvider.showAnswer =
+        await themeChangeProvider.generalPreference.getAnswerVisibility();
   }
 
   @override
   Widget build(BuildContext context) {
-
     return ChangeNotifierProvider(
       create: (context) => themeChangeProvider,
-      child: Consumer<DarkThemeProvider>(
+      child: Consumer<GeneralPrefrencesProvider>(
         builder: (context, themeMode, _) => MaterialApp(
           title: 'مسائل بين الفرضين',
           debugShowCheckedModeBanner: false,
@@ -84,7 +87,7 @@ class _MyAppState extends State<MyApp> {
             colorScheme: Material3Theme.darkScheme(),
             useMaterial3: true,
           ),
-          home: const MainPage(),
+          home: const LandingPage(),
           themeMode: themeMode.darkTheme ? ThemeMode.dark : ThemeMode.light,
         ),
       ),

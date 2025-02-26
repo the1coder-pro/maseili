@@ -23,13 +23,13 @@ class QuestionAdapter extends TypeAdapter<Question> {
       fields[3] as String,
       fields[4] as bool?,
       fields[5] as DateTime?,
-    );
+    )..tags = (fields[6] as List?)?.cast<String>();
   }
 
   @override
   void write(BinaryWriter writer, Question obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(7)
       ..writeByte(0)
       ..write(obj.question)
       ..writeByte(1)
@@ -41,7 +41,9 @@ class QuestionAdapter extends TypeAdapter<Question> {
       ..writeByte(4)
       ..write(obj.isParagraph)
       ..writeByte(5)
-      ..write(obj.dateOfAnswer);
+      ..write(obj.dateOfAnswer)
+      ..writeByte(6)
+      ..write(obj.tags);
   }
 
   @override
