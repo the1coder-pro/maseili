@@ -2,6 +2,8 @@ import 'package:animations/animations.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:masel/dialogs/create_tag_dialog.dart';
+import 'package:masel/main.dart';
 import 'package:masel/models/tag_model.dart';
 import 'package:masel/pages/add_questions_page.dart';
 import 'package:masel/dialogs/delete_dialog.dart';
@@ -9,7 +11,7 @@ import 'package:masel/components/helper_functions.dart';
 import 'package:masel/components/question_view.dart';
 import 'package:masel/models/question_model.dart';
 import 'package:masel/components/preferences.dart';
-import 'package:masel/pages/mosque_page.dart';
+import 'package:masel/pages/mosque_content_page.dart';
 import 'package:provider/provider.dart';
 
 enum ScreenView { tableView, listView }
@@ -77,14 +79,14 @@ class _QuestionsPageState extends State<QuestionsPage> {
                   var questions =
                       filterUniqueQuestions(allQuestions).reversed.toList();
                   // filter questions to show unique questions only
-                  if (questions.isEmpty) {
-                    return const Center(
-                      child: Text(
-                        "لا توجد أسئلة",
-                        style: TextStyle(fontSize: 25),
-                      ),
-                    );
-                  }
+                  // if (questions.isEmpty) {
+                  //   return const Center(
+                  //     child: Text(
+                  //       "لا توجد أسئلة",
+                  //       style: TextStyle(fontSize: 25),
+                  //     ),
+                  //   );
+                  // }
                   return PageTransitionSwitcher(
                       transitionBuilder: (Widget child,
                           Animation<double> primaryAnimation,
@@ -121,9 +123,7 @@ class _QuestionsPageState extends State<QuestionsPage> {
                                           return Padding(
                                             padding: const EdgeInsets.all(8.0),
                                             child: Card.filled(
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .secondaryContainer,
+                                              color: tags[index].color.toColor,
                                               child: Container(
                                                 decoration: BoxDecoration(
                                                   border: Border.all(
@@ -134,12 +134,10 @@ class _QuestionsPageState extends State<QuestionsPage> {
                                                       BorderRadius.circular(10),
                                                 ),
                                                 child: ListTile(
-                                                  splashColor: Theme.of(context)
-                                                      .colorScheme
-                                                      .secondaryContainer,
-                                                  tileColor: Theme.of(context)
-                                                      .colorScheme
-                                                      .secondaryContainer,
+                                                  splashColor:
+                                                      tags[index].color.toColor,
+                                                  tileColor:
+                                                      tags[index].color.toColor,
                                                   title: Text(
                                                     tags[index].name,
                                                     style: TextStyle(
@@ -250,39 +248,6 @@ class _QuestionsPageState extends State<QuestionsPage> {
               child: const Icon(Icons.add),
             )));
   }
-}
-
-void createTagDialog(BuildContext context) {
-  final TextEditingController tagController = TextEditingController();
-  showDialog(
-    context: context,
-    builder: (context) {
-      return AlertDialog(
-        title: const Text("إضافة تصنيف"),
-        content: TextField(
-          controller: tagController,
-          decoration: const InputDecoration(hintText: "اسم التصنيف"),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            child: const Text("إلغاء"),
-          ),
-          TextButton(
-            onPressed: () {
-              if (tagController.text.isNotEmpty) {
-                Hive.box<Tag>('tags').add(Tag(tagController.text));
-                Navigator.pop(context);
-              }
-            },
-            child: const Text("إضافة"),
-          ),
-        ],
-      );
-    },
-  );
 }
 
 class ListViewSection extends StatelessWidget {
@@ -559,12 +524,13 @@ class MyTable extends StatelessWidget {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: SizedBox(
-        width: 780,
+        width: 900,
         child: Table(
           columnWidths: {
             0: FlexColumnWidth(6),
             1: FlexColumnWidth(8),
             2: FlexColumnWidth(10),
+            3: FlexColumnWidth(8),
           },
           border: TableBorder.all(
               borderRadius: BorderRadius.circular(10),
@@ -609,6 +575,14 @@ class MyTable extends StatelessWidget {
                           style: TextStyle(fontSize: 15))
                     ],
                   ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text('التصنيف',
+                      style: TextStyle(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onPrimaryContainer)),
                 ),
               ],
             ),
@@ -676,6 +650,15 @@ class MyTable extends StatelessWidget {
                           ],
                         );
                       }).toList(),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      question['tags'] ?? "",
+                      style: TextStyle(
+                          overflow: TextOverflow.ellipsis,
+                          color: Theme.of(context).colorScheme.onSurface),
                     ),
                   ),
                 ],

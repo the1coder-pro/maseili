@@ -8,6 +8,20 @@ import 'package:masel/theme.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 
+extension HexColor on Color {
+  String get toHex =>
+      '#${value.toRadixString(16).padLeft(8, '0').toUpperCase()}';
+}
+
+extension HexToColor on String {
+  Color get toColor {
+    final buffer = StringBuffer();
+    if (length == 6 || length == 7) buffer.write('FF'); // Add alpha if missing
+    buffer.write(replaceFirst('#', ''));
+    return Color(int.parse(buffer.toString(), radix: 16));
+  }
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 

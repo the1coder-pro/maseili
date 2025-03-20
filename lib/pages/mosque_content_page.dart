@@ -1,5 +1,7 @@
+import 'package:carousel_slider/carousel_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:masel/components/question_view.dart';
 import 'package:masel/pages/add_questions_page.dart';
 import 'package:masel/dialogs/adding_questions_dialog.dart';
 import 'package:masel/dialogs/copy_multiple_questions_to_mosques.dart';
@@ -384,8 +386,20 @@ class _MosquePageState extends State<MosquePage> {
                                   // questions[index].save();
                                 },
                                 secondary: PopupMenuButton(
+                                  tooltip: "المزيد",
                                   itemBuilder: (context) =>
                                       const <PopupMenuEntry>[
+                                    PopupMenuItem(
+                                      value: 3,
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Icon(Icons.image_outlined),
+                                          Text("عرض"),
+                                        ],
+                                      ),
+                                    ),
                                     PopupMenuItem(
                                         value: 0,
                                         child: Row(
@@ -420,22 +434,41 @@ class _MosquePageState extends State<MosquePage> {
                                         )),
                                   ],
                                   onSelected: (value) {
-                                    if (value == 0) {
-                                      showDialog(
-                                          context: context,
-                                          builder: (context) =>
-                                              CopyToMultipleMosquesDialog(
-                                                  question: questions[index]));
-                                    } else if (value == 1) {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  EditQuestionPage(context,
-                                                      questions, index)));
-                                    } else if (value == 2) {
-                                      deleteAQuestion(
-                                          context, questions, index);
+                                    switch (value) {
+                                      case 0:
+                                        showDialog(
+                                            context: context,
+                                            builder: (context) =>
+                                                CopyToMultipleMosquesDialog(
+                                                    question:
+                                                        questions[index]));
+                                        break;
+                                      case 1:
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    EditQuestionPage(context,
+                                                        questions, index)));
+                                        break;
+                                      case 2:
+                                        deleteAQuestion(
+                                            context, questions, index);
+                                        break;
+                                      case 3:
+                                        // use question view
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    QuestionView(
+                                                        index: 0,
+                                                        carouselController:
+                                                            CarouselSliderController(),
+                                                        questions: [
+                                                          questions[index]
+                                                        ])));
+                                        break;
                                     }
                                   },
                                 ),

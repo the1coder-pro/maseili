@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:masel/main.dart';
 import 'package:masel/models/question_model.dart';
 import 'package:masel/models/tag_model.dart';
 
@@ -110,6 +111,7 @@ class _AddQuestionPageState extends State<AddQuestionPage> {
                           padding: const EdgeInsets.all(4),
                           child: ChoiceChip(
                             label: Text(tag.name),
+                            backgroundColor: tag.color.toColor,
                             selected: selectedTags.contains(tag.name),
                             onSelected: (value) {
                               setState(() {

@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:masel/models/mosque_model.dart';
-import 'package:masel/pages/mosque_page.dart';
+import 'package:masel/pages/mosque_content_page.dart';
 import 'package:masel/models/question_model.dart';
 
 class CopyMultipleQuestionsToMosques extends StatefulWidget {

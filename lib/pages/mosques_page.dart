@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:masel/dialogs/delete_mosque_dialog.dart';
 import 'package:masel/dialogs/edit_mosque_dialog.dart';
+import 'package:masel/main.dart';
 import 'package:masel/models/mosque_model.dart';
-import 'package:masel/pages/mosque_page.dart';
+import 'package:masel/pages/mosque_content_page.dart';
 
 enum ViewType { gridView, listView }
 
@@ -17,11 +18,24 @@ class MosquesPage extends StatefulWidget {
 
 class _MosquesPageState extends State<MosquesPage> {
   final TextEditingController controller = TextEditingController();
+  Color selectedColor = Colors.blue;
+  final List<Color> colorOptions = [
+    Colors.blue,
+    Colors.red,
+    Colors.green,
+    Colors.yellow,
+    Colors.purple,
+    Colors.orange,
+    Colors.pink,
+    Colors.teal,
+    Colors.brown,
+    Colors.grey,
+  ];
 
   void addMosque() {
     if (controller.text.isNotEmpty) {
       Box<Mosque> mosquesBox = Hive.box<Mosque>('mosques');
-      mosquesBox.add(Mosque(controller.text));
+      mosquesBox.add(Mosque(controller.text, color: selectedColor.toHex));
       Navigator.pop(context);
     }
   }
@@ -248,9 +262,10 @@ class _MosquesPageState extends State<MosquesPage> {
                                         Icon(
                                           Icons.folder,
                                           size: 180,
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .secondaryContainer,
+                                          color: mosques[index].color.toColor,
+                                          // color: Theme.of(context)
+                                          //     .colorScheme
+                                          //     .secondaryContainer,
                                         ),
                                         Padding(
                                           padding:
@@ -298,12 +313,46 @@ class _MosquesPageState extends State<MosquesPage> {
                 textDirection: TextDirection.rtl,
                 child: AlertDialog(
                   title: const Text("إضافة مسجد"),
-                  content: TextField(
-                    controller: controller,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      hintText: "اسم المسجد",
-                    ),
+                  content: Column(
+                    children: [
+                      TextField(
+                        controller: controller,
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          hintText: "اسم المسجد",
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      // SegmentedButton for color selection
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: SegmentedButton<Color>(
+                          segments: colorOptions
+                              .map((color) => ButtonSegment<Color>(
+                                    value: color,
+                                    label: Container(
+                                      width: 24,
+                                      height: 24,
+                                      decoration: BoxDecoration(
+                                        color: color,
+                                        shape: BoxShape.circle,
+                                        border: Border.all(
+                                          color: Colors.black,
+                                          width: selectedColor == color ? 2 : 1,
+                                        ),
+                                      ),
+                                    ),
+                                  ))
+                              .toList(),
+                          selected: {selectedColor},
+                          onSelectionChanged: (newSelection) {
+                            setState(() {
+                              selectedColor = newSelection.first;
+                            });
+                          },
+                        ),
+                      ),
+                    ],
                   ),
                   actions: [
                     TextButton(

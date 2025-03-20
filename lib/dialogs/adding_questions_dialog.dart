@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:masel/pages/add_questions_page.dart';
 import 'package:masel/components/helper_functions.dart';
-import 'package:masel/pages/mosque_page.dart';
+import 'package:masel/pages/mosque_content_page.dart';
 import 'package:masel/models/question_model.dart';
 
 class AddingQuestionsDialog extends StatefulWidget {

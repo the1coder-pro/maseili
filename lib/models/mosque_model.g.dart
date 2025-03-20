@@ -18,15 +18,18 @@ class MosqueAdapter extends TypeAdapter<Mosque> {
     };
     return Mosque(
       fields[0] as String,
+      color: fields[1] as String,
     );
   }
 
   @override
   void write(BinaryWriter writer, Mosque obj) {
     writer
-      ..writeByte(1)
+      ..writeByte(2)
       ..writeByte(0)
-      ..write(obj.name);
+      ..write(obj.name)
+      ..writeByte(1)
+      ..write(obj.color);
   }
 
   @override
