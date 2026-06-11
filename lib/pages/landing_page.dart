@@ -26,6 +26,7 @@ class _LandingPageState extends State<LandingPage> {
         length: 2,
         child: Scaffold(
           appBar: AppBar(
+            elevation: 0,
             backgroundColor: Theme.of(context).colorScheme.surface,
             title: const Text(
               "مسائل بين الفرضين",
@@ -277,7 +278,7 @@ class _LandingPageState extends State<LandingPage> {
                                                 CrossAxisAlignment.start,
                                             children: [
                                               Text(
-                                                "حجم الخط (${generalProvider.fontSize.round()})",
+                                                "حجم الخط",
                                                 style: TextStyle(
                                                     fontSize: generalProvider
                                                         .fontSize,
