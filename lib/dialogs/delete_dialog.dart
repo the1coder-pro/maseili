@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:m3e_buttons/m3e_buttons.dart';
 import 'package:masel/models/question_model.dart';
 
 Future<dynamic> deleteAQuestion(
     BuildContext context, List<Question> questions, int index) {
+  final colorScheme = Theme.of(context).colorScheme;
   return showDialog(
       context: context,
       builder: (context) {
@@ -10,18 +12,18 @@ Future<dynamic> deleteAQuestion(
           textDirection: TextDirection.rtl,
           child: AlertDialog(
             icon: const Icon(Icons.delete_outline),
-            iconColor: Theme.of(context).colorScheme.error,
+            iconColor: colorScheme.error,
             title: const Text("حذف المسألة"),
             content:
                 Text("هل أنت متأكد من حذف '${questions[index].question}'؟"),
             actions: [
-              TextButton(
+              M3EOutlinedButton(
                 onPressed: () {
                   Navigator.pop(context);
                 },
                 child: const Text("لا"),
               ),
-              FilledButton(
+              M3EFilledButton(
                 onPressed: () {
                   questions[index].delete();
 
@@ -32,6 +34,10 @@ Future<dynamic> deleteAQuestion(
                     ),
                   );
                 },
+                decoration: M3EButtonDecoration(
+                  backgroundColor: WidgetStatePropertyAll(colorScheme.error),
+                  foregroundColor: WidgetStatePropertyAll(colorScheme.onError),
+                ),
                 child: const Text("نعم"),
               ),
             ],
@@ -39,3 +45,4 @@ Future<dynamic> deleteAQuestion(
         );
       });
 }
+

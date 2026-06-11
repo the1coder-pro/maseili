@@ -78,12 +78,12 @@ class _ParagraphPageState extends State<ParagraphPage> {
             Padding(
               padding: const EdgeInsets.only(right: 10, top: 10, bottom: 5),
               child: Text(widget.question.question,
-                  style: const TextStyle(fontSize: 30)),
+                  style: const TextStyle(fontSize: 30, fontFamily: "Vazirmatn")),
             ),
             Card.outlined(
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Text(widget.question.description!),
+                child: Text(widget.question.description!, style: const TextStyle(fontFamily: "Vazirmatn")),
               ),
             ),
 

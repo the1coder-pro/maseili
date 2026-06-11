@@ -8,6 +8,8 @@ import 'package:masel/models/question_model.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:m3e_buttons/m3e_buttons.dart';
+import 'package:m3e_card_list/m3e_card_list.dart';
 
 String applicationVersion = "0.1.1";
 
@@ -37,7 +39,6 @@ class _SettingsPageState extends State<SettingsPage> {
 
     String json = jsonEncode(map);
     debugPrint("json: $json");
-    // Directory dir = await _getDirectory();
     final directory = await getExternalStorageDirectory();
 
     String fileLocation = directory!.path;
@@ -47,18 +48,16 @@ class _SettingsPageState extends State<SettingsPage> {
         .replaceAll(' ', '-')
         .replaceAll(':', '-');
 
-    String path =
-        '$fileLocation/$formattedDate.json'; //Change .json to your desired file format(like .barbackup or .hive).
+    String path = '$fileLocation/$formattedDate.json';
     File backupFile = File(path);
     await backupFile.writeAsString(json);
 
     debugPrint("The file was written to: $path");
-    // scaffold to show the user that the backup is done and have a button to open the folder
 
     if (!mounted) return;
 
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
+      const SnackBar(
         content: Text('تم تصدير البيانات بنجاح.'),
       ),
     );
@@ -67,147 +66,203 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     final generalProvider = Provider.of<GeneralPrefrencesProvider>(context);
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Directionality(
-        textDirection: TextDirection.rtl,
-        child: Scaffold(
-          appBar: AppBar(
-            title: const Text("الإعدادات"),
-            centerTitle: true,
-            // actions: [
-            //   IconButton(onPressed: (){
-            //     // test the fromJson and toJson methods
-            //     String json = '[{"question":"ما هو العلم؟","description":"العلم هو العلم","answered":false,"mosqueName":"المسجد","isParagraph":false, "dateOfAnswer": ""}]';
-            //     var map = jsonDecode(json);
-            //     Question question = Question.fromJson(map[0]);
-            //     print("fromJson: $question");
-            //     print("toJson: ${question.toJson()}");
-            //     // print each alone
-            //     print("question: ${question.question}");
-            //     print("description: ${question.description}");
-            //     print("answered: ${question.answered}");
-            //     print("mosqueName: ${question.mosqueName}");
-            //     print("isParagraph: ${question.isParagraph}");
-            //     print("dateOfAnswer: ${question.dateOfAnswer}");
-            //     // print the date in other style
-            //     print("dateOfAnswer: ${question.dateOfAnswer?.year}-${question.dateOfAnswer?.month}-${question.dateOfAnswer?.day}");
-            //
-            //   }, icon: Icon(Icons.warning))
-            // ],
+      textDirection: TextDirection.rtl,
+      child: Scaffold(
+        backgroundColor: colorScheme.surfaceContainerLow,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          title: const Text(
+            "الإعدادات",
+            style: TextStyle(fontWeight: FontWeight.bold),
           ),
-          body: Padding(
-            padding: const EdgeInsets.all(10),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Expanded(
-                  child: ListView(
-                    children: [
-                      SwitchListTile(
-                          title: const Text("الوضع الداكن",
-                              style: TextStyle(fontSize: 24)),
-                          value: generalProvider.darkTheme,
-                          onChanged: (value) {
-                            generalProvider.darkTheme = value;
-                          }),
-                      // export data to a json file
-                      const SizedBox(height: 10),
-                      SwitchListTile(
-                          value: generalProvider.showAnswer,
-                          onChanged: (value) {
-                            generalProvider.showAnswer = value;
-                          },
-                          subtitle: Text("في صفحة الأسئلة",
-                              style: TextStyle(fontSize: 15)),
-                          title: Text(
-                            "إظهار الإجابة",
-                            style: TextStyle(fontSize: 24),
-                          )),
-
-                      Padding(
-                        padding: const EdgeInsets.only(right: 10, left: 10),
-                        child: Card.outlined(
-                            child: Column(children: [
-                          ListTile(
-                            trailing: const Icon(Icons.backup_outlined),
-                            title: const Text("تصدير البيانات"),
-                            onTap: () async {
-                              // if (await Permission.storage.request().isGranted) {
-                              await createBackup();
-                            },
-                          ),
-                          const Divider(),
-
-                          ListTile(
-                            splashColor: Theme.of(context).colorScheme.surface,
-                            trailing: const Icon(Icons.restore_outlined),
-                            title: const Text("استيراد البيانات"),
-                            onTap: () async {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => Directionality(
-                                            textDirection: TextDirection.rtl,
-                                            child: Scaffold(
-                                                appBar: AppBar(
-                                                  title: Text(
-                                                      "أختر النسخة الإحتياطية"),
-                                                ),
-                                                body: SelectBackupFile()),
-                                          )));
-                            },
-                          ),
-                          // ),
-                        ])),
-                      ),
-                      ListTile(
-                        leading: const Icon(Icons.open_in_new),
-                        title: const Text("الذهاب الى المتجر"),
-                        onTap: () async {
-                          // open play store
+          centerTitle: true,
+        ),
+        body: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+          child: Column(
+            children: [
+              Expanded(
+                child: ListView(
+                  children: [
+                    const SizedBox(height: 12),
+                    M3ECardList.of(
+                      color: colorScheme.surface,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 12),
+                      onTap: (index) async {
+                        if (index == 0) {
+                          generalProvider.showAnswer =
+                              !generalProvider.showAnswer;
+                        } else if (index == 1) {
+                          await createBackup();
+                        } else if (index == 2) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => Directionality(
+                                textDirection: TextDirection.rtl,
+                                child: Scaffold(
+                                  backgroundColor:
+                                      colorScheme.surfaceContainerLow,
+                                  appBar: AppBar(
+                                    title: const Text("أختر النسخة الإحتياطية"),
+                                    centerTitle: true,
+                                  ),
+                                  body: const SelectBackupFile(),
+                                ),
+                              ),
+                            ),
+                          );
+                        } else if (index == 3) {
                           Uri url = Uri.parse(
                               'https://play.google.com/store/apps/details?id=com.orange.masel');
-
                           if (!await launchUrl(url)) {
                             throw Exception('Could not launch $url');
                           }
-                        },
+                        }
+                      },
+                      children: [
+                        // 2. Show Answer
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                Icon(Icons.visibility_outlined,
+                                    color: colorScheme.primary),
+                                const SizedBox(width: 16),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                      "إظهار الإجابة",
+                                      style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w600),
+                                    ),
+                                    Text(
+                                      "في صفحة الأسئلة",
+                                      style: TextStyle(
+                                        fontSize: 13,
+                                        color: colorScheme.onSurfaceVariant,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                            Switch(
+                              value: generalProvider.showAnswer,
+                              onChanged: (value) {
+                                generalProvider.showAnswer = value;
+                              },
+                            ),
+                          ],
+                        ),
+                        // 3. Export Data
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                Icon(Icons.backup_outlined,
+                                    color: colorScheme.primary),
+                                const SizedBox(width: 16),
+                                const Text(
+                                  "تصدير البيانات",
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w600),
+                                ),
+                              ],
+                            ),
+                            Icon(Icons.chevron_right,
+                                color: colorScheme.onSurfaceVariant),
+                          ],
+                        ),
+                        // 4. Import Data
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                Icon(Icons.restore_outlined,
+                                    color: colorScheme.primary),
+                                const SizedBox(width: 16),
+                                const Text(
+                                  "استيراد البيانات",
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w600),
+                                ),
+                              ],
+                            ),
+                            Icon(Icons.chevron_right,
+                                color: colorScheme.onSurfaceVariant),
+                          ],
+                        ),
+                        // 5. Play Store
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                Icon(Icons.open_in_new,
+                                    color: colorScheme.primary),
+                                const SizedBox(width: 16),
+                                const Text(
+                                  "الذهاب الى المتجر",
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w600),
+                                ),
+                              ],
+                            ),
+                            Icon(Icons.chevron_right,
+                                color: colorScheme.onSurfaceVariant),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 16.0),
+                child: Opacity(
+                  opacity: 0.6,
+                  child: Column(
+                    children: [
+                      Text(
+                        "v$applicationVersion",
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontFamily: "Rubik",
+                          color: Theme.of(context).colorScheme.outline,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        "من انتاج كمَّثرى",
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontFamily: "Rubik",
+                          color: Theme.of(context).colorScheme.outlineVariant,
+                        ),
                       ),
                     ],
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(right: 20, bottom: 5),
-                  child: Align(
-                    alignment: Alignment.bottomRight,
-                    child: Text("أحكام العلمين \nلمسائل بين الفرضين",
-                        style: TextStyle(
-                            height: 0.9,
-                            fontSize: 30,
-                            fontFamily: "Lateef",
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onSurface
-                                .withValues(alpha: 0.8))),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(right: 20, bottom: 10),
-                  child: Align(
-                    alignment: Alignment.bottomRight,
-                    child: Text(applicationVersion,
-                        style: TextStyle(
-                            height: 0.9,
-                            fontSize: 10,
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onSurface
-                                .withValues(alpha: 0.8))),
-                  ),
-                )
-              ],
-            ),
+              ),
+            ],
           ),
-        ));
+        ),
+      ),
+    );
   }
 }
 
@@ -222,6 +277,7 @@ class _SelectBackupFileState extends State<SelectBackupFile> {
   Directory? _currentDirectory;
   List<FileSystemEntity>? _files;
   String? _selectedFilePath;
+
   @override
   void initState() {
     super.initState();
@@ -264,13 +320,12 @@ class _SelectBackupFileState extends State<SelectBackupFile> {
   Future<void> restoreBackup(String filePath) async {
     File files = File(filePath);
 
-    Hive.box<Question>('questions').clear();
-    Hive.box<Mosque>('mosques').clear();
+    await Hive.box<Question>('questions').clear();
+    await Hive.box<Mosque>('mosques').clear();
     var map = jsonDecode(await files.readAsString());
     for (var i = 0; i < map.length; i++) {
       Question question = Question.fromJson(map[i]);
-
-      Hive.box<Question>('questions').add(question);
+      await Hive.box<Question>('questions').add(question);
     }
 
     var mosqueNames = [];
@@ -281,7 +336,7 @@ class _SelectBackupFileState extends State<SelectBackupFile> {
         }
       }
     }
-    Hive.box<Mosque>('mosques')
+    await Hive.box<Mosque>('mosques')
         .addAll(mosqueNames.map((name) => Mosque(name)).toList());
 
     debugPrint("MosqueNames: $mosqueNames");
@@ -294,44 +349,116 @@ class _SelectBackupFileState extends State<SelectBackupFile> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        _currentDirectory != null
-            ? Expanded(
-                child: ListView.builder(
-                  itemCount: _files?.length ?? 0,
-                  itemBuilder: (context, index) {
-                    final file = _files![index];
-                    if (FileSystemEntity.isDirectorySync(file.path)) {
-                      return ListTile(
-                        title: Text(file.path.split('/').last),
-                        leading: Icon(Icons.folder),
-                        onTap: () => _navigateToDirectory(file as Directory),
-                      );
-                    } else {
-                      return ListTile(
-                        title: Text(file.path.split('/').last),
-                        leading: Icon(Icons.insert_drive_file),
-                        trailing: IconButton(
-                          icon: Icon(Icons.delete, color: Colors.red),
-                          onPressed: () {
-                            file.deleteSync();
-                            _initExternalStorage();
-                          },
-                        ),
-                        onTap: () => _selectFile(file.path),
-                      );
-                    }
-                  },
-                ),
-              )
-            : Center(child: CircularProgressIndicator()),
-        if (_selectedFilePath != null)
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text('Selected File: $_selectedFilePath'),
+    final colorScheme = Theme.of(context).colorScheme;
+
+    if (_currentDirectory == null) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    final files = _files ?? [];
+    if (files.isEmpty) {
+      return const Center(
+        child: Text(
+          "لا توجد نسخ احتياطية",
+          style: TextStyle(fontSize: 18),
+        ),
+      );
+    }
+
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        children: [
+          Expanded(
+            child: M3ECardList.builder(
+              color: colorScheme.surface,
+              itemCount: files.length,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              itemBuilder: (context, index) {
+                final file = files[index];
+                final isDirectory = FileSystemEntity.isDirectorySync(file.path);
+                final fileName = file.path.split('/').last;
+
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Row(
+                        children: [
+                          Icon(
+                            isDirectory
+                                ? Icons.folder
+                                : Icons.insert_drive_file,
+                            color: colorScheme.primary,
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Text(
+                              fileName,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    if (!isDirectory)
+                      IconButton(
+                        icon:
+                            const Icon(Icons.delete_outline, color: Colors.red),
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: const Text("حذف النسخة الاحتياطية؟"),
+                              content:
+                                  const Text("هل أنت متأكد من حذف هذا الملف؟"),
+                              actions: [
+                                M3EOutlinedButton(
+                                  child: const Text("إلغاء"),
+                                  onPressed: () => Navigator.pop(context),
+                                ),
+                                M3ETextButton(
+                                  child: const Text("حذف",
+                                      style: TextStyle(color: Colors.red)),
+                                  onPressed: () {
+                                    file.deleteSync();
+                                    Navigator.pop(context);
+                                    _initExternalStorage();
+                                  },
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                  ],
+                );
+              },
+              onTap: (index) {
+                final file = files[index];
+                if (FileSystemEntity.isDirectorySync(file.path)) {
+                  _navigateToDirectory(file as Directory);
+                } else {
+                  _selectFile(file.path);
+                }
+              },
+            ),
           ),
-      ],
+          if (_selectedFilePath != null)
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                'الملف المختار: ${_selectedFilePath!.split('/').last}',
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ),
+        ],
+      ),
     );
   }
 }

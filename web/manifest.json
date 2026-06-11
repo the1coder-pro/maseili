@@ -1,11 +1,11 @@
 {
-    "name": "masel",
-    "short_name": "masel",
+    "name": "مسائل بين الفرضين",
+    "short_name": "مسائل",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#hexcode",
-    "theme_color": "#hexcode",
-    "description": "A new Flutter project.",
+    "background_color": "#faf8ff",
+    "theme_color": "#faf8ff",
+    "description": "تطبيق مسائل بين الفرضين لإدارة ومتابعة المسائل اثناء الخطبة",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

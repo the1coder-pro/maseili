@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:m3e_buttons/m3e_buttons.dart';
 import 'package:masel/models/question_model.dart';
 
 Future<dynamic> editDialog(
@@ -23,29 +24,31 @@ Future<dynamic> editDialog(
                 controller: questionController,
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(),
-                  hintText: "المسألة",
+                  labelText: "المسألة",
+                  alignLabelWithHint: true,
                 ),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 16),
               TextField(
                 controller: descriptionController,
                 minLines: 4,
                 maxLines: 10,
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(),
-                  hintText: "الوصف",
+                  labelText: "الوصف",
+                  alignLabelWithHint: true,
                 ),
               ),
             ],
           ),
           actions: [
-            TextButton(
+            M3EOutlinedButton(
               onPressed: () {
                 Navigator.pop(context);
               },
               child: const Text("إلغاء"),
             ),
-            FilledButton(
+            M3EFilledButton(
               onPressed: () {
                 if (questionController.text.isNotEmpty) {
                   questions[index].question = questionController.text;
@@ -61,4 +64,4 @@ Future<dynamic> editDialog(
       );
     },
   );
-}
+}

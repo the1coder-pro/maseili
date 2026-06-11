@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:m3e_buttons/m3e_buttons.dart';
 import 'package:masel/models/mosque_model.dart';
 import 'package:masel/pages/mosque_content_page.dart';
 import 'package:masel/models/question_model.dart';
@@ -62,13 +63,13 @@ class _CopyMultipleQuestionsToMosquesState
           ),
         ),
         actions: [
-          TextButton(
+          M3EOutlinedButton(
             onPressed: () {
               Navigator.pop(context, PageMode.normal);
             },
             child: const Text("إلغاء"),
           ),
-          FilledButton(
+          M3EFilledButton(
             onPressed: () {
               // add question to selected mosques
               for (var mosqueName in selectedMosques) {
@@ -98,3 +99,4 @@ class _CopyMultipleQuestionsToMosquesState
     );
   }
 }
+

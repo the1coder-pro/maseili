@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:m3e_buttons/m3e_buttons.dart';
 import 'package:masel/models/mosque_model.dart';
 
 import '../models/question_model.dart';
@@ -39,17 +40,17 @@ void showEditMosqueDialog(BuildContext context, int index, String currentName) {
           controller: controller,
           decoration: const InputDecoration(
             border: OutlineInputBorder(),
-            hintText: "اسم المسجد",
+            labelText: "اسم المسجد",
           ),
         ),
         actions: [
-          TextButton(
+          M3EOutlinedButton(
             onPressed: () {
               Navigator.pop(context);
             },
             child: const Text("إلغاء"),
           ),
-          FilledButton(
+          M3EFilledButton(
             onPressed: () {
               editMosque(index, controller.text, context);
               Navigator.pop(context);
@@ -62,3 +63,4 @@ void showEditMosqueDialog(BuildContext context, int index, String currentName) {
     ),
   );
 }
+

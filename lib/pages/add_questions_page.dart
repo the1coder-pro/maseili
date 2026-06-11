@@ -32,101 +32,195 @@ class _AddQuestionPageState extends State<AddQuestionPage> {
 
   @override
   Widget build(BuildContext context) {
-    // get all tags from the tags box
-
+    final colorScheme = Theme.of(context).colorScheme;
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text("إضافة مسألة"),
+          title: const Text(
+            "إضافة مسألة",
+            style: TextStyle(fontFamily: "Rubik", fontWeight: FontWeight.bold),
+          ),
           centerTitle: true,
           leading: IconButton(
-            icon: Icon(Icons.close),
+            icon: const Icon(Icons.close),
             onPressed: () {
               Navigator.pop(context);
             },
           ),
           actions: [
-            IconButton(
-              onPressed: () {
-                if (questionController.text.isNotEmpty) {
-                  Box<Question> questionsBox = Hive.box<Question>('questions');
-                  var question = Question(
-                      questionController.text,
-                      descriptionController.text,
-                      false,
-                      widget.mosqueName ?? "",
-                      isParagraph,
-                      null);
-                  question.tags = selectedTags;
-                  questionsBox.add(question);
+            Padding(
+              padding: const EdgeInsets.only(left: 12.0),
+              child: IconButton(
+                onPressed: () {
+                  if (questionController.text.isNotEmpty) {
+                    Box<Question> questionsBox = Hive.box<Question>('questions');
+                    var question = Question(
+                        questionController.text,
+                        descriptionController.text,
+                        false,
+                        widget.mosqueName ?? "",
+                        isParagraph,
+                        null);
+                    question.tags = selectedTags;
+                    questionsBox.add(question);
 
-                  Navigator.pop(context);
-                }
-              },
-              icon: const Icon(Icons.check),
+                    Navigator.pop(context);
+                  }
+                },
+                icon: const Icon(Icons.check),
+              ),
             ),
           ],
         ),
-        body: Padding(
-          padding: const EdgeInsets.all(20),
-          child: ListView(
-            children: [
-              TextField(
-                controller: questionController,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: "المسألة",
-                ),
-              ),
-              const SizedBox(height: 10),
-              TextField(
-                controller: descriptionController,
-                minLines: 4,
-                maxLines: 7,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: "الوصف",
-                ),
-              ),
-              const SizedBox(height: 10),
-              SwitchListTile(
-                  title: const Text(
-                    "هل هذه خطبة؟",
-                    textDirection: TextDirection.rtl,
-                    textAlign: TextAlign.right,
-                    style: TextStyle(fontSize: 18),
-                  ),
-                  value: isParagraph,
-                  onChanged: (value) {
-                    setState(() {
-                      isParagraph = value;
-                    });
-                  }),
-
-              // show a list of chips to select from as tags
-              Wrap(
-                children: allTags
-                    .map((tag) => Padding(
-                          padding: const EdgeInsets.all(4),
-                          child: ChoiceChip(
-                            label: Text(tag.name),
-                            backgroundColor: tag.color.toColor,
-                            selected: selectedTags.contains(tag.name),
-                            onSelected: (value) {
-                              setState(() {
-                                if (value) {
-                                  selectedTags.add(tag.name);
-                                } else {
-                                  selectedTags.remove(tag.name);
-                                }
-                              });
-                            },
+        body: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 600),
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: ListView(
+                children: [
+                  Card(
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                      side: BorderSide(color: colorScheme.outlineVariant.withOpacity(0.4)),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "تفاصيل المسألة",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: "Rubik",
+                              color: colorScheme.primary,
+                            ),
                           ),
-                        ))
-                    .toList(),
+                          const SizedBox(height: 16),
+                          TextField(
+                            controller: questionController,
+                            style: const TextStyle(fontFamily: "Rubik"),
+                            decoration: InputDecoration(
+                              prefixIcon: const Icon(Icons.quiz_outlined),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(14),
+                                borderSide: BorderSide(color: colorScheme.outline.withOpacity(0.4)),
+                              ),
+                              labelText: "المسألة / السؤال",
+                              labelStyle: const TextStyle(fontFamily: "Rubik"),
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          TextField(
+                            controller: descriptionController,
+                            minLines: 4,
+                            maxLines: 7,
+                            style: const TextStyle(fontFamily: "Rubik"),
+                            decoration: InputDecoration(
+                              prefixIcon: const Padding(
+                                padding: EdgeInsets.only(bottom: 80),
+                                child: Icon(Icons.description_outlined),
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(14),
+                                borderSide: BorderSide(color: colorScheme.outline.withOpacity(0.4)),
+                              ),
+                              labelText: "الوصف التفصيلي أو الجواب",
+                              labelStyle: const TextStyle(fontFamily: "Rubik"),
+                              alignLabelWithHint: true,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Card(
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                      side: BorderSide(color: colorScheme.outlineVariant.withOpacity(0.4)),
+                    ),
+                    child: SwitchListTile(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      title: const Text(
+                        "هل هذه خطبة؟",
+                        style: TextStyle(fontFamily: "Rubik", fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                      subtitle: const Text(
+                        "تفعيل هذا الخيار يحول المسألة إلى نص خطبة كامل",
+                        style: TextStyle(fontFamily: "Rubik", fontSize: 12),
+                      ),
+                      secondary: Icon(Icons.menu_book_rounded, color: colorScheme.secondary),
+                      value: isParagraph,
+                      onChanged: (value) {
+                        setState(() {
+                          isParagraph = value;
+                        });
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  if (allTags.isNotEmpty) ...[
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                      child: Text(
+                        "التصنيفات",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: "Rubik",
+                          color: colorScheme.onSurface,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: allTags.map((tag) {
+                        final isSelected = selectedTags.contains(tag.name);
+                        return FilterChip(
+                          label: Text(
+                            tag.name,
+                            style: TextStyle(
+                              fontFamily: "Rubik",
+                              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                              color: isSelected ? Colors.white : colorScheme.onSurface,
+                            ),
+                          ),
+                          backgroundColor: tag.color.toColor.withOpacity(0.15),
+                          selectedColor: tag.color.toColor,
+                          checkmarkColor: Colors.white,
+                          selected: isSelected,
+                          onSelected: (value) {
+                            setState(() {
+                              if (value) {
+                                selectedTags.add(tag.name);
+                              } else {
+                                selectedTags.remove(tag.name);
+                              }
+                            });
+                          },
+                        );
+                      }).toList(),
+                    ),
+                  ],
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ),
@@ -155,77 +249,150 @@ class _EditQuestionPageState extends State<EditQuestionPage> {
     questionController.text = widget.questions[widget.index].question;
     descriptionController.text =
         widget.questions[widget.index].description ?? "";
-    isParagraph = widget.questions[widget.index].isParagraph!;
+    isParagraph = widget.questions[widget.index].isParagraph ?? false;
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text("تعديل مسألة"),
+          title: const Text(
+            "تعديل مسألة",
+            style: TextStyle(fontFamily: "Rubik", fontWeight: FontWeight.bold),
+          ),
           centerTitle: true,
           leading: IconButton(
-            icon: Icon(Icons.close),
+            icon: const Icon(Icons.close),
             onPressed: () {
               Navigator.pop(context);
             },
           ),
           actions: [
-            IconButton(
-              onPressed: () {
-                if (questionController.text.isNotEmpty) {
-                  widget.questions[widget.index].question =
-                      questionController.text;
-                  widget.questions[widget.index].description =
-                      descriptionController.text;
-                  widget.questions[widget.index].isParagraph = isParagraph;
-                  widget.questions[widget.index].save();
-                  Navigator.pop(context);
-                }
-              },
-              icon: const Icon(Icons.check),
+            Padding(
+              padding: const EdgeInsets.only(left: 12.0),
+              child: IconButton(
+                onPressed: () {
+                  if (questionController.text.isNotEmpty) {
+                    widget.questions[widget.index].question =
+                        questionController.text;
+                    widget.questions[widget.index].description =
+                        descriptionController.text;
+                    widget.questions[widget.index].isParagraph = isParagraph;
+                    widget.questions[widget.index].save();
+                    Navigator.pop(context);
+                  }
+                },
+                icon: const Icon(Icons.check),
+              ),
             ),
           ],
         ),
-        body: Padding(
-          padding: const EdgeInsets.all(20),
-          child: ListView(
-            children: [
-              TextField(
-                controller: questionController,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: "المسألة",
-                ),
-              ),
-              const SizedBox(height: 10),
-              TextField(
-                controller: descriptionController,
-                minLines: 2,
-                maxLines: 5,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: "الوصف",
-                ),
-              ),
-              const SizedBox(height: 5),
-              CheckboxListTile(
-                  title: const Text(
-                    "هل هذه خطبة؟",
-                    textDirection: TextDirection.rtl,
-                    textAlign: TextAlign.right,
-                    style: TextStyle(fontSize: 18),
+        body: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 600),
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: ListView(
+                children: [
+                  Card(
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                      side: BorderSide(color: colorScheme.outlineVariant.withOpacity(0.4)),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "تفاصيل المسألة",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: "Rubik",
+                              color: colorScheme.primary,
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          TextField(
+                            controller: questionController,
+                            style: const TextStyle(fontFamily: "Rubik"),
+                            decoration: InputDecoration(
+                              prefixIcon: const Icon(Icons.quiz_outlined),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(14),
+                                borderSide: BorderSide(color: colorScheme.outline.withOpacity(0.4)),
+                              ),
+                              labelText: "المسألة / السؤال",
+                              labelStyle: const TextStyle(fontFamily: "Rubik"),
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          TextField(
+                            controller: descriptionController,
+                            minLines: 4,
+                            maxLines: 7,
+                            style: const TextStyle(fontFamily: "Rubik"),
+                            decoration: InputDecoration(
+                              prefixIcon: const Padding(
+                                padding: EdgeInsets.only(bottom: 80),
+                                child: Icon(Icons.description_outlined),
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(14),
+                                borderSide: BorderSide(color: colorScheme.outline.withOpacity(0.4)),
+                              ),
+                              labelText: "الوصف التفصيلي أو الجواب",
+                              labelStyle: const TextStyle(fontFamily: "Rubik"),
+                              alignLabelWithHint: true,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
-                  value: isParagraph,
-                  onChanged: (value) {
-                    setState(() {
-                      isParagraph = value!;
-                    });
-                  })
-            ],
+                  const SizedBox(height: 16),
+                  Card(
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                      side: BorderSide(color: colorScheme.outlineVariant.withOpacity(0.4)),
+                    ),
+                    child: SwitchListTile(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      title: const Text(
+                        "هل هذه خطبة؟",
+                        style: TextStyle(fontFamily: "Rubik", fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                      subtitle: const Text(
+                        "تفعيل هذا الخيار يحول المسألة إلى نص خطبة كامل",
+                        style: TextStyle(fontFamily: "Rubik", fontSize: 12),
+                      ),
+                      secondary: Icon(Icons.menu_book_rounded, color: colorScheme.secondary),
+                      value: isParagraph,
+                      onChanged: (value) {
+                        setState(() {
+                          isParagraph = value;
+                        });
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         ),
       ),

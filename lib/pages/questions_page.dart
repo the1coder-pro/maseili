@@ -1,6 +1,6 @@
-import 'package:animations/animations.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_m3shapes_extended/flutter_m3shapes_extended.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:masel/dialogs/create_tag_dialog.dart';
 import 'package:masel/main.dart';
@@ -14,18 +14,15 @@ import 'package:masel/components/preferences.dart';
 import 'package:masel/pages/mosque_content_page.dart';
 import 'package:provider/provider.dart';
 
-enum ScreenView { tableView, listView }
-
 class QuestionsPage extends StatefulWidget {
-  const QuestionsPage({super.key});
+  final bool isGridView;
+  const QuestionsPage({super.key, required this.isGridView});
 
   @override
   State<QuestionsPage> createState() => _QuestionsPageState();
 }
 
 class _QuestionsPageState extends State<QuestionsPage> {
-  Set<ScreenView> selected = {ScreenView.listView};
-
   TextEditingController searchController = TextEditingController();
   CarouselSliderController carouselController = CarouselSliderController();
 
@@ -35,43 +32,7 @@ class _QuestionsPageState extends State<QuestionsPage> {
     return Directionality(
         textDirection: TextDirection.rtl,
         child: Scaffold(
-            appBar: AppBar(
-              title: const Text("التصنيفات"),
-              centerTitle: true,
-              actions: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 8, top: 8, bottom: 8),
-                  child: SegmentedButton<ScreenView>(
-                      onSelectionChanged: (Set<ScreenView> value) {
-                        setState(() {
-                          selected = {value.first};
-                        });
-                      },
-                      showSelectedIcon: false,
-                      segments: const [
-                        ButtonSegment(
-                            icon: Padding(
-                              padding: EdgeInsets.only(bottom: 8),
-                              child: Icon(
-                                Icons.view_agenda_outlined,
-                                size: 20,
-                              ),
-                            ),
-                            value: ScreenView.listView),
-                        ButtonSegment(
-                            icon: Padding(
-                              padding: EdgeInsets.only(bottom: 8),
-                              child: Icon(
-                                Icons.table_chart_outlined,
-                                size: 20,
-                              ),
-                            ),
-                            value: ScreenView.tableView),
-                      ],
-                      selected: selected),
-                )
-              ],
-            ),
+            appBar: AppBar(),
             body: ValueListenableBuilder<Box<Question>>(
                 valueListenable: Hive.box<Question>('questions').listenable(),
                 builder: (BuildContext context, box, _) {
@@ -87,163 +48,173 @@ class _QuestionsPageState extends State<QuestionsPage> {
                   //     ),
                   //   );
                   // }
-                  return PageTransitionSwitcher(
-                      transitionBuilder: (Widget child,
-                          Animation<double> primaryAnimation,
-                          Animation<double> secondaryAnimation) {
-                        return FadeThroughTransition(
-                          animation: primaryAnimation,
-                          secondaryAnimation: secondaryAnimation,
-                          child: child,
-                        );
-                      },
-                      child: selected.contains(ScreenView.listView)
-                          ? ValueListenableBuilder<Box<Tag>>(
-                              valueListenable: Hive.box<Tag>('tags')
-                                  .listenable(), // for tags
-                              builder: (BuildContext context, box, _) {
-                                var tags = box.values.toList();
-                                if (tags.isEmpty) {
-                                  return const Center(
-                                    child: Text(
-                                      "لا توجد تصنيفات",
-                                      style: TextStyle(fontSize: 25),
-                                    ),
-                                  );
-                                }
-                                // return grid of tags
-                                return ListView(
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: ListView.builder(
-                                        shrinkWrap: true,
-                                        itemCount: tags.length,
-                                        itemBuilder: (context, index) {
-                                          return Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: Card.filled(
-                                              color: tags[index].color.toColor,
-                                              child: Container(
-                                                decoration: BoxDecoration(
-                                                  border: Border.all(
-                                                      color: Theme.of(context)
-                                                          .colorScheme
-                                                          .onSecondaryContainer),
-                                                  borderRadius:
-                                                      BorderRadius.circular(10),
-                                                ),
-                                                child: ListTile(
-                                                  splashColor:
-                                                      tags[index].color.toColor,
-                                                  tileColor:
-                                                      tags[index].color.toColor,
-                                                  title: Text(
-                                                    tags[index].name,
-                                                    style: TextStyle(
-                                                        color: Theme.of(context)
-                                                            .colorScheme
-                                                            .onSecondaryContainer),
+                  return ValueListenableBuilder<Box<Tag>>(
+                      valueListenable: Hive.box<Tag>('tags')
+                          .listenable(), // for tags
+                      builder: (BuildContext context, box, _) {
+                        var tags = box.values.toList();
+                        if (tags.isEmpty) {
+                           return Center(
+                             child: Column(
+                               mainAxisAlignment: MainAxisAlignment.center,
+                               children: [
+                                 M3EContainer.gem(
+                                   width: 130,
+                                   height: 130,
+                                   color: Theme.of(context).colorScheme.primaryContainer,
+                                   child: Icon(
+                                     Icons.category_outlined,
+                                     size: 50,
+                                     color: Theme.of(context).colorScheme.primary,
+                                   ),
+                                 ),
+                                 const SizedBox(height: 16),
+                                 const Text(
+                                   "لا توجد تصنيفات",
+                                   style: TextStyle(
+                                     fontSize: 22,
+                                     fontFamily: "Rubik",
+                                     fontWeight: FontWeight.bold,
+                                   ),
+                                 ),
+                               ],
+                             ),
+                           );
+                        }
+                        // return grid of tags
+                        return GridView.builder(
+                          padding: const EdgeInsets.all(16.0),
+                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            childAspectRatio: 2.2,
+                            crossAxisSpacing: 16,
+                            mainAxisSpacing: 16,
+                          ),
+                          itemCount: tags.length,
+                          itemBuilder: (context, index) {
+                            return Card.filled(
+                              margin: EdgeInsets.zero,
+                              color: tags[index].color.toColor,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onSecondaryContainer),
+                                  borderRadius:
+                                      BorderRadius.circular(10),
+                                ),
+                                child: ListTile(
+                                  splashColor:
+                                      tags[index].color.toColor,
+                                  tileColor:
+                                      tags[index].color.toColor,
+                                  title: Text(
+                                    tags[index].name,
+                                    style: TextStyle(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onSecondaryContainer),
+                                  ),
+                                  onTap: () {
+                                    Navigator.push(context,
+                                        MaterialPageRoute(
+                                            builder: (context) {
+                                      if (questions
+                                          .where((element) {
+                                            if (element.tags ==
+                                                null) {
+                                              return false;
+                                            }
+                                            return element.tags!
+                                                .contains(
+                                                    tags[index]
+                                                        .name);
+                                          })
+                                          .toList()
+                                          .isEmpty) {
+                                        return Directionality(
+                                          textDirection:
+                                              TextDirection.rtl,
+                                          child: Scaffold(
+                                            appBar: AppBar(
+                                              title: Text(tags[index].name),
+                                            ),
+                                            body: Center(
+                                              child: Column(
+                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                children: [
+                                                  M3EContainer.gem(
+                                                    width: 130,
+                                                    height: 130,
+                                                    color: Theme.of(context).colorScheme.primaryContainer,
+                                                    child: Icon(
+                                                      Icons.assignment_outlined,
+                                                      size: 50,
+                                                      color: Theme.of(context).colorScheme.primary,
+                                                    ),
                                                   ),
-                                                  onTap: () {
-                                                    Navigator.push(context,
-                                                        MaterialPageRoute(
-                                                            builder: (context) {
-                                                      if (questions
-                                                          .where((element) {
-                                                            if (element.tags ==
-                                                                null) {
-                                                              return false;
-                                                            }
-                                                            return element.tags!
-                                                                .contains(
-                                                                    tags[index]
-                                                                        .name);
-                                                          })
-                                                          .toList()
-                                                          .isEmpty) {
-                                                        return Directionality(
-                                                          textDirection:
-                                                              TextDirection.rtl,
-                                                          child: Scaffold(
-                                                            appBar: AppBar(
-                                                              title: Text(
-                                                                  tags[index]
-                                                                      .name),
-                                                            ),
-                                                            body: Center(
-                                                              child: Text(
-                                                                  "لا توجد أسئلة بهذا التصنيف"),
-                                                            ),
-                                                          ),
-                                                        );
-                                                      }
-                                                      return Directionality(
-                                                        textDirection:
-                                                            TextDirection.rtl,
-                                                        child: Scaffold(
-                                                          appBar: AppBar(
-                                                            title: Text(
-                                                                tags[index]
-                                                                    .name),
-                                                          ),
-                                                          body: ListViewSection(
-                                                            searchController:
-                                                                searchController,
-                                                            themeProvider:
-                                                                themeProvider,
-                                                            questions: questions
-                                                                .where(
-                                                                    (element) {
-                                                              if (element
-                                                                      .tags ==
-                                                                  null) {
-                                                                return false;
-                                                              } else {
-                                                                return element
-                                                                    .tags!
-                                                                    .contains(tags[
-                                                                            index]
-                                                                        .name);
-                                                              }
-                                                            }).toList(),
-                                                            carouselController:
-                                                                carouselController,
-                                                          ),
-                                                        ),
-                                                      );
-                                                    }));
-                                                  },
-                                                ),
+                                                  const SizedBox(height: 16),
+                                                  const Text(
+                                                    "لا توجد أسئلة بهذا التصنيف",
+                                                    style: TextStyle(
+                                                      fontSize: 22,
+                                                      fontFamily: "Rubik",
+                                                      fontWeight: FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                ],
                                               ),
                                             ),
-                                          );
-                                        },
-                                      ),
-                                    ),
-                                  ],
-                                );
-                              },
-                            )
-                          : ListView(
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: MyTable(allQuestions: allQuestions),
+                                          ),
+                                        );
+                                      }
+                                      return Directionality(
+                                        textDirection:
+                                            TextDirection.rtl,
+                                        child: Scaffold(
+                                          appBar: AppBar(
+                                            title: Text(tags[index].name),
+                                          ),
+                                          body: ListViewSection(
+                                            searchController:
+                                                searchController,
+                                            themeProvider:
+                                                themeProvider,
+                                            questions: questions
+                                                .where(
+                                                    (element) {
+                                              if (element
+                                                      .tags ==
+                                                  null) {
+                                                return false;
+                                              } else {
+                                                return element
+                                                    .tags!
+                                                    .contains(tags[
+                                                            index]
+                                                        .name);
+                                              }
+                                            }).toList(),
+                                            carouselController:
+                                                carouselController,
+                                          ),
+                                        ),
+                                      );
+                                    }));
+                                  },
                                 ),
-                              ],
-                            ));
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    );
                 }),
             floatingActionButton: FloatingActionButton(
               elevation: 3,
               onPressed: () {
-                if (selected.contains(ScreenView.tableView)) {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return AddQuestionPage();
-                  }));
-                } else {
-                  createTagDialog(context);
-                }
+                createTagDialog(context);
               },
               child: const Icon(Icons.add),
             )));
