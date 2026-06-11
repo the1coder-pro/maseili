@@ -826,11 +826,13 @@ class _MyAppState extends State<MyApp> {
                 textTheme: textTheme,
                 colorScheme: lightScheme,
                 useMaterial3: true,
+                scaffoldBackgroundColor: lightScheme.surface,
               ),
               darkTheme: ThemeData(
                 textTheme: textTheme,
                 colorScheme: darkScheme,
                 useMaterial3: true,
+                scaffoldBackgroundColor: darkScheme.surface,
               ),
               builder: (context, child) {
                 return MediaQuery(

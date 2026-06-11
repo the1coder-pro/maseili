@@ -242,7 +242,13 @@ class EditQuestionPage extends StatefulWidget {
 class _EditQuestionPageState extends State<EditQuestionPage> {
   final TextEditingController questionController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
+
   bool isParagraph = false;
+
+  // get the list of tags from the tags box
+  Box<Tag> tagsBox = Hive.box<Tag>('tags');
+  List<Tag> allTags = [];
+  List<String> selectedTags = [];
 
   @override
   void initState() {
@@ -250,6 +256,8 @@ class _EditQuestionPageState extends State<EditQuestionPage> {
     descriptionController.text =
         widget.questions[widget.index].description ?? "";
     isParagraph = widget.questions[widget.index].isParagraph ?? false;
+    allTags = tagsBox.values.toList();
+    selectedTags = List<String>.from(widget.questions[widget.index].tags ?? []);
     super.initState();
   }
 
@@ -282,6 +290,7 @@ class _EditQuestionPageState extends State<EditQuestionPage> {
                     widget.questions[widget.index].description =
                         descriptionController.text;
                     widget.questions[widget.index].isParagraph = isParagraph;
+                    widget.questions[widget.index].tags = selectedTags;
                     widget.questions[widget.index].save();
                     Navigator.pop(context);
                   }
@@ -348,7 +357,7 @@ class _EditQuestionPageState extends State<EditQuestionPage> {
                               ),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(14),
-                              ),
+                                      ),
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(14),
                                 borderSide: BorderSide(color: colorScheme.outline.withOpacity(0.4)),
@@ -390,6 +399,52 @@ class _EditQuestionPageState extends State<EditQuestionPage> {
                       },
                     ),
                   ),
+                  const SizedBox(height: 16),
+                  if (allTags.isNotEmpty) ...[
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                      child: Text(
+                        "التصنيفات",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: "Rubik",
+                          color: colorScheme.onSurface,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: allTags.map((tag) {
+                        final isSelected = selectedTags.contains(tag.name);
+                        return FilterChip(
+                          label: Text(
+                            tag.name,
+                            style: TextStyle(
+                              fontFamily: "Rubik",
+                              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                              color: isSelected ? Colors.white : colorScheme.onSurface,
+                            ),
+                          ),
+                          backgroundColor: tag.color.toColor.withOpacity(0.15),
+                          selectedColor: tag.color.toColor,
+                          checkmarkColor: Colors.white,
+                          selected: isSelected,
+                          onSelected: (value) {
+                            setState(() {
+                              if (value) {
+                                selectedTags.add(tag.name);
+                              } else {
+                                selectedTags.remove(tag.name);
+                              }
+                            });
+                          },
+                        );
+                      }).toList(),
+                    ),
+                  ],
                 ],
               ),
             ),

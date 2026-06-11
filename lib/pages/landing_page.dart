@@ -65,7 +65,7 @@ class _LandingPageState extends State<LandingPage> {
                           builder: (context, generalProvider, _) => Directionality(
                             textDirection: TextDirection.rtl,
                             child: Scaffold(
-                              backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
+                              backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
                               appBar: AppBar(
                                 backgroundColor: Colors.transparent,
                                 elevation: 0,
@@ -82,6 +82,9 @@ class _LandingPageState extends State<LandingPage> {
                                     elevation: 0,
                                     color: Theme.of(context).colorScheme.surface,
                                     clipBehavior: Clip.antiAlias,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
                                     child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [

@@ -9,9 +9,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:m3e_buttons/m3e_buttons.dart';
-import 'package:m3e_card_list/m3e_card_list.dart';
 
-String applicationVersion = "0.1.1";
+String applicationVersion = "1.0.2";
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -71,7 +70,7 @@ class _SettingsPageState extends State<SettingsPage> {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
-        backgroundColor: colorScheme.surfaceContainerLow,
+        backgroundColor: colorScheme.surfaceContainer,
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,
@@ -89,144 +88,110 @@ class _SettingsPageState extends State<SettingsPage> {
                 child: ListView(
                   children: [
                     const SizedBox(height: 12),
-                    M3ECardList.of(
+                    Card(
+                      elevation: 0,
                       color: colorScheme.surface,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 12),
-                      onTap: (index) async {
-                        if (index == 0) {
-                          generalProvider.showAnswer =
-                              !generalProvider.showAnswer;
-                        } else if (index == 1) {
-                          await createBackup();
-                        } else if (index == 2) {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => Directionality(
-                                textDirection: TextDirection.rtl,
-                                child: Scaffold(
-                                  backgroundColor:
-                                      colorScheme.surfaceContainerLow,
-                                  appBar: AppBar(
-                                    title: const Text("أختر النسخة الإحتياطية"),
-                                    centerTitle: true,
-                                  ),
-                                  body: const SelectBackupFile(),
-                                ),
-                              ),
+                      clipBehavior: Clip.antiAlias,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Column(
+                        children: [
+                          SwitchListTile(
+                            contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 4),
+                            secondary: Icon(Icons.visibility_outlined,
+                                color: colorScheme.primary),
+                            title: const Text(
+                              "إظهار الإجابة",
+                              style: TextStyle(
+                                  fontSize: 18, fontWeight: FontWeight.w600),
                             ),
-                          );
-                        } else if (index == 3) {
-                          Uri url = Uri.parse(
-                              'https://play.google.com/store/apps/details?id=com.orange.masel');
-                          if (!await launchUrl(url)) {
-                            throw Exception('Could not launch $url');
-                          }
-                        }
-                      },
-                      children: [
-                        // 2. Show Answer
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              children: [
-                                Icon(Icons.visibility_outlined,
-                                    color: colorScheme.primary),
-                                const SizedBox(width: 16),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const Text(
-                                      "إظهار الإجابة",
-                                      style: TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.w600),
-                                    ),
-                                    Text(
-                                      "في صفحة الأسئلة",
-                                      style: TextStyle(
-                                        fontSize: 13,
-                                        color: colorScheme.onSurfaceVariant,
+                            subtitle: Text(
+                              "في صفحة الأسئلة",
+                              style: TextStyle(
+                                  fontSize: 13,
+                                  color: colorScheme.onSurfaceVariant),
+                            ),
+                            value: generalProvider.showAnswer,
+                            onChanged: (value) {
+                              generalProvider.showAnswer = value;
+                            },
+                          ),
+                          const Divider(height: 1),
+                          ListTile(
+                            contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 4),
+                            leading: Icon(Icons.backup_outlined,
+                                color: colorScheme.primary),
+                            title: const Text(
+                              "تصدير البيانات",
+                              style: TextStyle(
+                                  fontSize: 18, fontWeight: FontWeight.w600),
+                            ),
+                            trailing: Icon(Icons.chevron_right,
+                                color: colorScheme.onSurfaceVariant),
+                            onTap: () async {
+                              await createBackup();
+                            },
+                          ),
+                          const Divider(height: 1),
+                          ListTile(
+                            contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 4),
+                            leading: Icon(Icons.restore_outlined,
+                                color: colorScheme.primary),
+                            title: const Text(
+                              "استيراد البيانات",
+                              style: TextStyle(
+                                  fontSize: 18, fontWeight: FontWeight.w600),
+                            ),
+                            trailing: Icon(Icons.chevron_right,
+                                color: colorScheme.onSurfaceVariant),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => Directionality(
+                                    textDirection: TextDirection.rtl,
+                                    child: Scaffold(
+                                      backgroundColor:
+                                          colorScheme.surfaceContainer,
+                                      appBar: AppBar(
+                                        title: const Text(
+                                            "أختر النسخة الإحتياطية"),
+                                        centerTitle: true,
                                       ),
+                                      body: const SelectBackupFile(),
                                     ),
-                                  ],
+                                  ),
                                 ),
-                              ],
+                              );
+                            },
+                          ),
+                          const Divider(height: 1),
+                          ListTile(
+                            contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 4),
+                            leading: Icon(Icons.open_in_new,
+                                color: colorScheme.primary),
+                            title: const Text(
+                              "الذهاب الى المتجر",
+                              style: TextStyle(
+                                  fontSize: 18, fontWeight: FontWeight.w600),
                             ),
-                            Switch(
-                              value: generalProvider.showAnswer,
-                              onChanged: (value) {
-                                generalProvider.showAnswer = value;
-                              },
-                            ),
-                          ],
-                        ),
-                        // 3. Export Data
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              children: [
-                                Icon(Icons.backup_outlined,
-                                    color: colorScheme.primary),
-                                const SizedBox(width: 16),
-                                const Text(
-                                  "تصدير البيانات",
-                                  style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w600),
-                                ),
-                              ],
-                            ),
-                            Icon(Icons.chevron_right,
+                            trailing: Icon(Icons.chevron_right,
                                 color: colorScheme.onSurfaceVariant),
-                          ],
-                        ),
-                        // 4. Import Data
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              children: [
-                                Icon(Icons.restore_outlined,
-                                    color: colorScheme.primary),
-                                const SizedBox(width: 16),
-                                const Text(
-                                  "استيراد البيانات",
-                                  style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w600),
-                                ),
-                              ],
-                            ),
-                            Icon(Icons.chevron_right,
-                                color: colorScheme.onSurfaceVariant),
-                          ],
-                        ),
-                        // 5. Play Store
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              children: [
-                                Icon(Icons.open_in_new,
-                                    color: colorScheme.primary),
-                                const SizedBox(width: 16),
-                                const Text(
-                                  "الذهاب الى المتجر",
-                                  style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w600),
-                                ),
-                              ],
-                            ),
-                            Icon(Icons.chevron_right,
-                                color: colorScheme.onSurfaceVariant),
-                          ],
-                        ),
-                      ],
+                            onTap: () async {
+                              Uri url = Uri.parse(
+                                  'https://play.google.com/store/apps/details?id=com.orange.masel');
+                              if (!await launchUrl(url)) {
+                                throw Exception('Could not launch $url');
+                              }
+                            },
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
@@ -370,83 +335,80 @@ class _SelectBackupFileState extends State<SelectBackupFile> {
       child: Column(
         children: [
           Expanded(
-            child: M3ECardList.builder(
+            child: Card(
+              elevation: 0,
               color: colorScheme.surface,
-              itemCount: files.length,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              itemBuilder: (context, index) {
-                final file = files[index];
-                final isDirectory = FileSystemEntity.isDirectorySync(file.path);
-                final fileName = file.path.split('/').last;
+              clipBehavior: Clip.antiAlias,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: ListView.separated(
+                itemCount: files.length,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                separatorBuilder: (context, index) => const Divider(height: 1),
+                itemBuilder: (context, index) {
+                  final file = files[index];
+                  final isDirectory =
+                      FileSystemEntity.isDirectorySync(file.path);
+                  final fileName = file.path.split('/').last;
 
-                return Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Row(
-                        children: [
-                          Icon(
-                            isDirectory
-                                ? Icons.folder
-                                : Icons.insert_drive_file,
-                            color: colorScheme.primary,
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: Text(
-                              fileName,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
-                      ),
+                  return ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    onTap: () {
+                      if (FileSystemEntity.isDirectorySync(file.path)) {
+                        _navigateToDirectory(file as Directory);
+                      } else {
+                        _selectFile(file.path);
+                      }
+                    },
+                    leading: Icon(
+                      isDirectory ? Icons.folder : Icons.insert_drive_file,
+                      color: colorScheme.primary,
                     ),
-                    if (!isDirectory)
-                      IconButton(
-                        icon:
-                            const Icon(Icons.delete_outline, color: Colors.red),
-                        onPressed: () {
-                          showDialog(
-                            context: context,
-                            builder: (context) => AlertDialog(
-                              title: const Text("حذف النسخة الاحتياطية؟"),
-                              content:
-                                  const Text("هل أنت متأكد من حذف هذا الملف؟"),
-                              actions: [
-                                M3EOutlinedButton(
-                                  child: const Text("إلغاء"),
-                                  onPressed: () => Navigator.pop(context),
-                                ),
-                                M3ETextButton(
-                                  child: const Text("حذف",
-                                      style: TextStyle(color: Colors.red)),
-                                  onPressed: () {
-                                    file.deleteSync();
-                                    Navigator.pop(context);
-                                    _initExternalStorage();
-                                  },
-                                ),
-                              ],
-                            ),
-                          );
-                        },
+                    title: Text(
+                      fileName,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
                       ),
-                  ],
-                );
-              },
-              onTap: (index) {
-                final file = files[index];
-                if (FileSystemEntity.isDirectorySync(file.path)) {
-                  _navigateToDirectory(file as Directory);
-                } else {
-                  _selectFile(file.path);
-                }
-              },
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    trailing: isDirectory
+                        ? null
+                        : IconButton(
+                            icon: const Icon(Icons.delete_outline,
+                                color: Colors.red),
+                            onPressed: () {
+                              showDialog(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  title: const Text("حذف النسخة الاحتياطية؟"),
+                                  content: const Text(
+                                      "هل أنت متأكد من حذف هذا الملف؟"),
+                                  actions: [
+                                    M3EOutlinedButton(
+                                      child: const Text("إلغاء"),
+                                      onPressed: () => Navigator.pop(context),
+                                    ),
+                                    M3ETextButton(
+                                      child: const Text("حذف",
+                                          style: TextStyle(color: Colors.red)),
+                                      onPressed: () {
+                                        file.deleteSync();
+                                        Navigator.pop(context);
+                                        _initExternalStorage();
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
+                  );
+                },
+              ),
             ),
           ),
           if (_selectedFilePath != null)

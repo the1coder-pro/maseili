@@ -272,22 +272,34 @@ class ListViewSection extends StatelessWidget {
           // search bar
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: TextField(
+            child: SearchBar(
               controller: searchController,
+              hintText: "ابحث عن سؤال",
+              elevation: WidgetStateProperty.all(0),
+              backgroundColor: WidgetStateProperty.all(
+                Theme.of(context).colorScheme.surfaceContainerHigh,
+              ),
+              padding: const WidgetStatePropertyAll<EdgeInsets>(
+                EdgeInsets.symmetric(horizontal: 16.0),
+              ),
+              leading: Icon(
+                Icons.search_outlined,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+              trailing: themeProvider.searchQuery.isNotEmpty
+                  ? [
+                      IconButton(
+                        icon: const Icon(Icons.clear_outlined),
+                        onPressed: () {
+                          themeProvider.searchQuery = "";
+                          searchController.clear();
+                        },
+                      ),
+                    ]
+                  : null,
               onChanged: (value) {
                 themeProvider.searchQuery = value;
               },
-              decoration: InputDecoration(
-                  prefixIcon: IconButton(
-                      onPressed: () {
-                        themeProvider.searchQuery = "";
-                        searchController.clear();
-                      },
-                      icon: Icon(Icons.clear)),
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10)),
-                  hintText: "ابحث عن سؤال",
-                  suffixIcon: const Icon(Icons.search)),
             ),
           ),
           questions
@@ -303,8 +315,32 @@ class ListViewSection extends StatelessWidget {
                   .isEmpty
               ? Expanded(
                   child: Center(
-                      child: Text(
-                          "لا توجد أسئلة عن: ${themeProvider.searchQuery}")))
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        M3EContainer.gem(
+                          width: 130,
+                          height: 130,
+                          color: Theme.of(context).colorScheme.primaryContainer,
+                          child: Icon(
+                            Icons.search_off_outlined,
+                            size: 50,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          "لا توجد أسئلة عن: ${themeProvider.searchQuery}",
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontFamily: "Rubik",
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
               : Expanded(
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
