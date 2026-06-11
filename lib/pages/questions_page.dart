@@ -2,6 +2,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_m3shapes_extended/flutter_m3shapes_extended.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:m3e_card_list/m3e_card_list.dart';
 import 'package:masel/dialogs/create_tag_dialog.dart';
 import 'package:masel/main.dart';
 import 'package:masel/models/tag_model.dart';
@@ -32,22 +33,12 @@ class _QuestionsPageState extends State<QuestionsPage> {
     return Directionality(
         textDirection: TextDirection.rtl,
         child: Scaffold(
-            appBar: AppBar(),
             body: ValueListenableBuilder<Box<Question>>(
                 valueListenable: Hive.box<Question>('questions').listenable(),
                 builder: (BuildContext context, box, _) {
                   var allQuestions = box.values.toList();
                   var questions =
                       filterUniqueQuestions(allQuestions).reversed.toList();
-                  // filter questions to show unique questions only
-                  // if (questions.isEmpty) {
-                  //   return const Center(
-                  //     child: Text(
-                  //       "لا توجد أسئلة",
-                  //       style: TextStyle(fontSize: 25),
-                  //     ),
-                  //   );
-                  // }
                   return ValueListenableBuilder<Box<Tag>>(
                       valueListenable: Hive.box<Tag>('tags')
                           .listenable(), // for tags
@@ -70,13 +61,13 @@ class _QuestionsPageState extends State<QuestionsPage> {
                                  ),
                                  const SizedBox(height: 16),
                                  const Text(
-                                   "لا توجد تصنيفات",
-                                   style: TextStyle(
-                                     fontSize: 22,
-                                     fontFamily: "Rubik",
-                                     fontWeight: FontWeight.bold,
-                                   ),
-                                 ),
+                                    "لا توجد تصنيفات",
+                                    style: TextStyle(
+                                      fontSize: 22,
+                                      fontFamily: "Rubik",
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
                                ],
                              ),
                            );
@@ -92,47 +83,83 @@ class _QuestionsPageState extends State<QuestionsPage> {
                           ),
                           itemCount: tags.length,
                           itemBuilder: (context, index) {
+                            final baseColor = tags[index].color.toColor;
+                            Color adjustColor;
+                            if (Theme.of(context).brightness == Brightness.dark) {
+                              if (baseColor.value == Colors.blue.shade600.value) {
+                                adjustColor = Colors.blue.shade300;
+                              } else if (baseColor.value == Colors.red.shade600.value) {
+                                adjustColor = Colors.red.shade300;
+                              } else if (baseColor.value == Colors.green.shade600.value) {
+                                adjustColor = Colors.green.shade300;
+                              } else if (baseColor.value == Colors.amber.shade600.value) {
+                                adjustColor = Colors.amber.shade300;
+                              } else if (baseColor.value == Colors.purple.shade600.value) {
+                                adjustColor = Colors.purple.shade300;
+                              } else if (baseColor.value == Colors.orange.shade600.value) {
+                                adjustColor = Colors.orange.shade300;
+                              } else if (baseColor.value == Colors.pink.shade600.value) {
+                                adjustColor = Colors.pink.shade300;
+                              } else if (baseColor.value == Colors.teal.shade600.value) {
+                                adjustColor = Colors.teal.shade300;
+                              } else if (baseColor.value == Colors.brown.shade600.value) {
+                                adjustColor = Colors.brown.shade300;
+                              } else if (baseColor.value == Colors.grey.shade600.value) {
+                                adjustColor = Colors.grey.shade400;
+                              } else {
+                                adjustColor = baseColor;
+                              }
+                            } else {
+                              if (baseColor.value == Colors.blue.shade300.value) {
+                                adjustColor = Colors.blue.shade600;
+                              } else if (baseColor.value == Colors.red.shade300.value) {
+                                adjustColor = Colors.red.shade600;
+                              } else if (baseColor.value == Colors.green.shade300.value) {
+                                adjustColor = Colors.green.shade600;
+                              } else if (baseColor.value == Colors.amber.shade300.value) {
+                                adjustColor = Colors.amber.shade600;
+                              } else if (baseColor.value == Colors.purple.shade300.value) {
+                                adjustColor = Colors.purple.shade600;
+                              } else if (baseColor.value == Colors.orange.shade300.value) {
+                                adjustColor = Colors.orange.shade600;
+                              } else if (baseColor.value == Colors.pink.shade300.value) {
+                                adjustColor = Colors.pink.shade600;
+                              } else if (baseColor.value == Colors.teal.shade300.value) {
+                                adjustColor = Colors.teal.shade600;
+                              } else if (baseColor.value == Colors.brown.shade300.value) {
+                                adjustColor = Colors.brown.shade600;
+                              } else if (baseColor.value == Colors.grey.shade400.value) {
+                                adjustColor = Colors.grey.shade600;
+                              } else {
+                                adjustColor = baseColor;
+                              }
+                            }
+
+                            final textColor = adjustColor.computeLuminance() > 0.5 ? Colors.black87 : Colors.white;
+
                             return Card.filled(
                               margin: EdgeInsets.zero,
-                              color: tags[index].color.toColor,
+                              color: adjustColor,
                               child: Container(
                                 decoration: BoxDecoration(
-                                  border: Border.all(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onSecondaryContainer),
-                                  borderRadius:
-                                      BorderRadius.circular(10),
+                                  borderRadius: BorderRadius.circular(10),
                                 ),
-                                child: ListTile(
-                                  splashColor:
-                                      tags[index].color.toColor,
-                                  tileColor:
-                                      tags[index].color.toColor,
-                                  title: Text(
-                                    tags[index].name,
-                                    style: TextStyle(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .onSecondaryContainer),
-                                  ),
+                                child: InkWell(
+                                  borderRadius: BorderRadius.circular(10),
                                   onTap: () {
                                     Navigator.push(context,
                                         MaterialPageRoute(
                                             builder: (context) {
-                                      if (questions
+                                      final filteredList = questions
                                           .where((element) {
-                                            if (element.tags ==
-                                                null) {
+                                            if (element.tags == null) {
                                               return false;
                                             }
                                             return element.tags!
-                                                .contains(
-                                                    tags[index]
-                                                        .name);
+                                                .contains(tags[index].name);
                                           })
-                                          .toList()
-                                          .isEmpty) {
+                                          .toList();
+                                      if (filteredList.isEmpty) {
                                         return Directionality(
                                           textDirection:
                                               TextDirection.rtl,
@@ -181,21 +208,7 @@ class _QuestionsPageState extends State<QuestionsPage> {
                                                 searchController,
                                             themeProvider:
                                                 themeProvider,
-                                            questions: questions
-                                                .where(
-                                                    (element) {
-                                              if (element
-                                                      .tags ==
-                                                  null) {
-                                                return false;
-                                              } else {
-                                                return element
-                                                    .tags!
-                                                    .contains(tags[
-                                                            index]
-                                                        .name);
-                                              }
-                                            }).toList(),
+                                            questions: filteredList,
                                             carouselController:
                                                 carouselController,
                                           ),
@@ -203,6 +216,21 @@ class _QuestionsPageState extends State<QuestionsPage> {
                                       );
                                     }));
                                   },
+                                  child: Center(
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                                      child: Text(
+                                        tags[index].name,
+                                        style: TextStyle(
+                                          color: textColor,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                          fontFamily: "Rubik",
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                  ),
                                 ),
                               ),
                             );
@@ -278,23 +306,10 @@ class ListViewSection extends StatelessWidget {
                       child: Text(
                           "لا توجد أسئلة عن: ${themeProvider.searchQuery}")))
               : Expanded(
-                  child: ListView.builder(
-                    padding: EdgeInsets.only(bottom: 80),
-                    itemCount: questions
-                        .where((element) =>
-                            element.question
-                                .contains(themeProvider.searchQuery) ||
-                            element.description!
-                                .contains(themeProvider.searchQuery) ||
-                            element.mosqueName
-                                .contains(themeProvider.searchQuery) ||
-                            element.answered.toString().contains(themeProvider
-                                .searchQuery) // if nothing show all
-                            ||
-                            themeProvider.searchQuery.isEmpty)
-                        .length,
-                    itemBuilder: (context, index) {
-                      final question = questions
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: M3ECardList.builder(
+                      itemCount: questions
                           .where((element) =>
                               element.question
                                   .contains(themeProvider.searchQuery) ||
@@ -306,154 +321,91 @@ class ListViewSection extends StatelessWidget {
                                   .searchQuery) // if nothing show all
                               ||
                               themeProvider.searchQuery.isEmpty)
-                          .toList()[index];
+                          .length,
+                      itemBuilder: (context, index) {
+                        final question = questions
+                            .where((element) =>
+                                element.question
+                                    .contains(themeProvider.searchQuery) ||
+                                element.description!
+                                    .contains(themeProvider.searchQuery) ||
+                                element.mosqueName
+                                    .contains(themeProvider.searchQuery) ||
+                                element.answered.toString().contains(themeProvider
+                                    .searchQuery) // if nothing show all
+                                ||
+                                themeProvider.searchQuery.isEmpty)
+                            .toList()[index];
 
-                      return GestureDetector(
-                        onLongPressStart: (LongPressStartDetails details) {
-                          showMenu(
-                            context: context,
-                            position: RelativeRect.fromLTRB(
-                              details.globalPosition.dx,
-                              details.globalPosition.dy,
-                              details.globalPosition.dx,
-                              details.globalPosition.dy,
-                            ),
-                            items: [
-                              PopupMenuItem<int>(
-                                value: 0,
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Icon(Icons.edit_outlined),
-                                    Text("تعديل"),
-                                  ],
-                                ),
+                        return GestureDetector(
+                          onLongPressStart: (LongPressStartDetails details) {
+                            showMenu(
+                              context: context,
+                              position: RelativeRect.fromLTRB(
+                                details.globalPosition.dx,
+                                details.globalPosition.dy,
+                                details.globalPosition.dx,
+                                details.globalPosition.dy,
                               ),
-                              PopupMenuItem<int>(
-                                value: 1,
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Icon(Icons.delete_outline),
-                                    Text("حذف"),
-                                  ],
+                              items: [
+                                PopupMenuItem<int>(
+                                  value: 0,
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Icon(Icons.edit_outlined),
+                                      Text("تعديل"),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ).then((value) {
-                            if (value == 0) {
-                              if (context.mounted) {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => EditQuestionPage(
-                                            context,
-                                            questions
-                                                .where((element) =>
-                                                    element.question.contains(
-                                                        themeProvider
-                                                            .searchQuery) ||
-                                                    element.description!
-                                                        .contains(themeProvider
-                                                            .searchQuery) ||
-                                                    element.mosqueName.contains(
-                                                        themeProvider
-                                                            .searchQuery) ||
-                                                    element.answered
-                                                        .toString()
-                                                        .contains(themeProvider
-                                                            .searchQuery) // if nothing show all
-                                                    ||
-                                                    themeProvider
-                                                        .searchQuery.isEmpty)
-                                                .toList(),
-                                            index)));
-                              }
-                            } else if (value == 1) {
-                              // Delete mosque
-                              if (context.mounted) {
-                                deleteAQuestion(
-                                    context,
-                                    questions
-                                        .where((element) =>
-                                            element.question.contains(
-                                                themeProvider.searchQuery) ||
-                                            element.description!.contains(
-                                                themeProvider.searchQuery) ||
-                                            element.mosqueName.contains(
-                                                themeProvider.searchQuery) ||
-                                            element.answered
-                                                .toString()
-                                                .contains(themeProvider
-                                                    .searchQuery) // if nothing show all
-                                            ||
-                                            themeProvider.searchQuery.isEmpty)
-                                        .toList(),
-                                    index);
-                              }
-                            }
-                          });
-                        },
-                        child: Card.filled(
-                          color:
-                              Theme.of(context).colorScheme.secondaryContainer,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .onSecondaryContainer),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: ListTile(
-                              title: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: themeProvider.showAnswer
-                                      ? RichText(
-                                          text: TextSpan(
-                                            children: <TextSpan>[
-                                              TextSpan(
-                                                text: "${question.question}\n",
-                                                style: TextStyle(
-                                                    fontFamily: "Rubik",
-                                                    color: Theme.of(context)
-                                                        .colorScheme
-                                                        .onSecondaryContainer,
-                                                    fontSize: 15),
-                                              ),
-                                              TextSpan(
-                                                  text: question.description,
-                                                  style: TextStyle(
-                                                      fontFamily:
-                                                          "Scheherazade",
-                                                      color: Theme.of(context)
-                                                          .colorScheme
-                                                          .onSecondaryContainer,
-                                                      fontSize: 25)),
-                                            ],
-                                          ),
-                                        )
-                                      : Text(
-                                          question.question,
-                                          style: TextStyle(
-                                              fontFamily: "Rubik",
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .onSecondaryContainer,
-                                              fontSize: 22),
-                                        )),
-                              splashColor: Theme.of(context)
-                                  .colorScheme
-                                  .secondaryContainer,
-                              onTap: () {
-                                Navigator.push(context,
-                                    MaterialPageRoute(builder: (context) {
-                                  return QuestionView(
-                                      index: index,
-                                      carouselController: carouselController,
-                                      questions: questions
+                                PopupMenuItem<int>(
+                                  value: 1,
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Icon(Icons.delete_outline),
+                                      Text("حذف"),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ).then((value) {
+                              if (value == 0) {
+                                if (context.mounted) {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => EditQuestionPage(
+                                              context,
+                                              questions
+                                                  .where((element) =>
+                                                      element.question.contains(
+                                                          themeProvider
+                                                              .searchQuery) ||
+                                                      element.description!
+                                                          .contains(themeProvider
+                                                              .searchQuery) ||
+                                                      element.mosqueName.contains(
+                                                          themeProvider
+                                                              .searchQuery) ||
+                                                      element.answered
+                                                          .toString()
+                                                          .contains(themeProvider
+                                                              .searchQuery) // if nothing show all
+                                                      ||
+                                                      themeProvider
+                                                          .searchQuery.isEmpty)
+                                                  .toList(),
+                                              index)));
+                                }
+                              } else if (value == 1) {
+                                // Delete mosque
+                                if (context.mounted) {
+                                  deleteAQuestion(
+                                      context,
+                                      questions
                                           .where((element) =>
                                               element.question.contains(
                                                   themeProvider.searchQuery) ||
@@ -467,14 +419,81 @@ class ListViewSection extends StatelessWidget {
                                                       .searchQuery) // if nothing show all
                                               ||
                                               themeProvider.searchQuery.isEmpty)
-                                          .toList());
-                                }));
-                              },
+                                          .toList(),
+                                      index);
+                                }
+                              }
+                            });
+                          },
+                          child: InkWell(
+                            onTap: () {
+                              Navigator.push(context,
+                                  MaterialPageRoute(builder: (context) {
+                                return QuestionView(
+                                    index: index,
+                                    carouselController: carouselController,
+                                    questions: questions
+                                        .where((element) =>
+                                            element.question.contains(
+                                                themeProvider.searchQuery) ||
+                                            element.description!.contains(
+                                                themeProvider.searchQuery) ||
+                                            element.mosqueName.contains(
+                                                themeProvider.searchQuery) ||
+                                            element.answered
+                                                .toString()
+                                                .contains(themeProvider
+                                                    .searchQuery) // if nothing show all
+                                            ||
+                                            themeProvider.searchQuery.isEmpty)
+                                        .toList());
+                              }));
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 12.0, horizontal: 16.0),
+                              child: themeProvider.showAnswer
+                                  ? Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          question.question,
+                                          style: TextStyle(
+                                              fontFamily: "Rubik",
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .onSurface,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        const SizedBox(height: 6),
+                                        Text(
+                                          question.description ?? "",
+                                          style: TextStyle(
+                                              fontFamily: "Scheherazade",
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .onSurfaceVariant,
+                                              fontSize: 22),
+                                        ),
+                                      ],
+                                    )
+                                  : Text(
+                                      question.question,
+                                      style: TextStyle(
+                                          fontFamily: "Rubik",
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onSurface,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold),
+                                    ),
                             ),
                           ),
-                        ),
-                      );
-                    },
+                        );
+                      },
+                    ),
                   ),
                 ),
         ],
