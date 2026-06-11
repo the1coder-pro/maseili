@@ -29,10 +29,7 @@ class _LandingPageState extends State<LandingPage> {
             backgroundColor: Theme.of(context).colorScheme.surface,
             title: const Text(
               "مسائل بين الفرضين",
-              style: TextStyle(
-                fontFamily: "Lateef",
-                fontSize: 32,
-              ),
+              style: TextStyle(fontFamily: "Lateef", fontSize: 32),
             ),
             centerTitle: true,
             actions: [
@@ -42,7 +39,8 @@ class _LandingPageState extends State<LandingPage> {
                   if (value == 0) {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const SettingsPage()),
+                      MaterialPageRoute(
+                          builder: (context) => const SettingsPage()),
                     );
                   } else if (value == 1) {
                     setState(() {
@@ -55,24 +53,32 @@ class _LandingPageState extends State<LandingPage> {
                   } else if (value == 4) {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const TablePage()),
+                      MaterialPageRoute(
+                          builder: (context) => const TablePage()),
                     );
                   } else if (value == 3) {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => Consumer<GeneralPrefrencesProvider>(
-                          builder: (context, generalProvider, _) => Directionality(
+                        builder: (context) =>
+                            Consumer<GeneralPrefrencesProvider>(
+                          builder: (context, generalProvider, _) =>
+                              Directionality(
                             textDirection: TextDirection.rtl,
                             child: Scaffold(
-                              backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
+                              backgroundColor: Theme.of(context)
+                                  .colorScheme
+                                  .surfaceContainer,
                               appBar: AppBar(
                                 backgroundColor: Colors.transparent,
                                 elevation: 0,
                                 centerTitle: true,
                                 title: const Text(
                                   "المظهر",
-                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                  style: TextStyle(
+                                    fontFamily: "Lateef",
+                                    fontSize: 32,
+                                  ),
                                 ),
                               ),
                               body: ListView(
@@ -80,18 +86,22 @@ class _LandingPageState extends State<LandingPage> {
                                 children: [
                                   Card(
                                     elevation: 0,
-                                    color: Theme.of(context).colorScheme.surface,
+                                    color:
+                                        Theme.of(context).colorScheme.surface,
                                     clipBehavior: Clip.antiAlias,
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(20),
                                     ),
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         SwitchListTile(
                                           title: Text(
                                             "الوضع الداكن",
-                                            style: TextStyle(fontSize: generalProvider.fontSize),
+                                            style: TextStyle(
+                                                fontSize:
+                                                    generalProvider.fontSize),
                                           ),
                                           value: generalProvider.darkTheme,
                                           onChanged: (bool val) {
@@ -102,42 +112,78 @@ class _LandingPageState extends State<LandingPage> {
                                         Padding(
                                           padding: const EdgeInsets.all(16.0),
                                           child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
                                             children: [
                                               Text(
                                                 "السمات",
-                                                style: TextStyle(fontSize: generalProvider.fontSize, fontWeight: FontWeight.bold),
+                                                style: TextStyle(
+                                                    fontSize: generalProvider
+                                                        .fontSize,
+                                                    fontWeight:
+                                                        FontWeight.normal),
                                               ),
                                               const SizedBox(height: 16),
                                               Column(
                                                 children: [
                                                   Row(
-                                                    mainAxisAlignment: MainAxisAlignment.center,
-                                                    children: List.generate(4, (index) {
-                                                      final isSelected = generalProvider.themeColorIndex == index;
-                                                      final lightScheme = colorSchemeChooser(index, false);
-                                                      final darkScheme = colorSchemeChooser(index, true);
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
+                                                    children: List.generate(4,
+                                                        (index) {
+                                                      final isSelected =
+                                                          generalProvider
+                                                                  .themeColorIndex ==
+                                                              index;
+                                                      final lightScheme =
+                                                          colorSchemeChooser(
+                                                              index, false);
+                                                      final darkScheme =
+                                                          colorSchemeChooser(
+                                                              index, true);
                                                       return Padding(
-                                                        padding: const EdgeInsets.symmetric(horizontal: 6),
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .symmetric(
+                                                                horizontal: 6),
                                                         child: GestureDetector(
                                                           onTap: () {
-                                                            generalProvider.themeColorIndex = index;
+                                                            generalProvider
+                                                                    .themeColorIndex =
+                                                                index;
                                                           },
                                                           child: Container(
-                                                            decoration: BoxDecoration(
-                                                              borderRadius: BorderRadius.circular(16),
-                                                              border: Border.all(
+                                                            decoration:
+                                                                BoxDecoration(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          16),
+                                                              border:
+                                                                  Border.all(
                                                                 color: isSelected
-                                                                    ? Theme.of(context).colorScheme.primary
-                                                                    : Colors.transparent,
+                                                                    ? Theme.of(
+                                                                            context)
+                                                                        .colorScheme
+                                                                        .primary
+                                                                    : Colors
+                                                                        .transparent,
                                                                 width: 3,
                                                               ),
                                                             ),
-                                                            padding: const EdgeInsets.all(2),
-                                                            child: ThemeButtonMockup(
-                                                              darkTheme: generalProvider.darkTheme,
-                                                              lightColorScheme: lightScheme,
-                                                              darkColorScheme: darkScheme,
+                                                            padding:
+                                                                const EdgeInsets
+                                                                    .all(2),
+                                                            child:
+                                                                ThemeButtonMockup(
+                                                              darkTheme:
+                                                                  generalProvider
+                                                                      .darkTheme,
+                                                              lightColorScheme:
+                                                                  lightScheme,
+                                                              darkColorScheme:
+                                                                  darkScheme,
                                                               isDevice: false,
                                                             ),
                                                           ),
@@ -147,35 +193,71 @@ class _LandingPageState extends State<LandingPage> {
                                                   ),
                                                   const SizedBox(height: 12),
                                                   Row(
-                                                    mainAxisAlignment: MainAxisAlignment.center,
-                                                    children: List.generate(4, (index) {
-                                                      final actualIndex = index + 4;
-                                                      final isDevice = actualIndex == 7;
-                                                      final isSelected = generalProvider.themeColorIndex == actualIndex;
-                                                      final lightScheme = colorSchemeChooser(actualIndex, false);
-                                                      final darkScheme = colorSchemeChooser(actualIndex, true);
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
+                                                    children: List.generate(4,
+                                                        (index) {
+                                                      final actualIndex =
+                                                          index + 4;
+                                                      final isDevice =
+                                                          actualIndex == 7;
+                                                      final isSelected =
+                                                          generalProvider
+                                                                  .themeColorIndex ==
+                                                              actualIndex;
+                                                      final lightScheme =
+                                                          colorSchemeChooser(
+                                                              actualIndex,
+                                                              false);
+                                                      final darkScheme =
+                                                          colorSchemeChooser(
+                                                              actualIndex,
+                                                              true);
                                                       return Padding(
-                                                        padding: const EdgeInsets.symmetric(horizontal: 6),
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .symmetric(
+                                                                horizontal: 6),
                                                         child: GestureDetector(
                                                           onTap: () {
-                                                            generalProvider.themeColorIndex = actualIndex;
+                                                            generalProvider
+                                                                    .themeColorIndex =
+                                                                actualIndex;
                                                           },
                                                           child: Container(
-                                                            decoration: BoxDecoration(
-                                                              borderRadius: BorderRadius.circular(16),
-                                                              border: Border.all(
+                                                            decoration:
+                                                                BoxDecoration(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          16),
+                                                              border:
+                                                                  Border.all(
                                                                 color: isSelected
-                                                                    ? Theme.of(context).colorScheme.primary
-                                                                    : Colors.transparent,
+                                                                    ? Theme.of(
+                                                                            context)
+                                                                        .colorScheme
+                                                                        .primary
+                                                                    : Colors
+                                                                        .transparent,
                                                                 width: 3,
                                                               ),
                                                             ),
-                                                            padding: const EdgeInsets.all(2),
-                                                            child: ThemeButtonMockup(
-                                                              darkTheme: generalProvider.darkTheme,
-                                                              lightColorScheme: lightScheme,
-                                                              darkColorScheme: darkScheme,
-                                                              isDevice: isDevice,
+                                                            padding:
+                                                                const EdgeInsets
+                                                                    .all(2),
+                                                            child:
+                                                                ThemeButtonMockup(
+                                                              darkTheme:
+                                                                  generalProvider
+                                                                      .darkTheme,
+                                                              lightColorScheme:
+                                                                  lightScheme,
+                                                              darkColorScheme:
+                                                                  darkScheme,
+                                                              isDevice:
+                                                                  isDevice,
                                                             ),
                                                           ),
                                                         ),
@@ -191,11 +273,16 @@ class _LandingPageState extends State<LandingPage> {
                                         Padding(
                                           padding: const EdgeInsets.all(16.0),
                                           child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
                                             children: [
                                               Text(
                                                 "حجم الخط (${generalProvider.fontSize.round()})",
-                                                style: TextStyle(fontSize: generalProvider.fontSize, fontWeight: FontWeight.bold),
+                                                style: TextStyle(
+                                                    fontSize: generalProvider
+                                                        .fontSize,
+                                                    fontWeight:
+                                                        FontWeight.bold),
                                               ),
                                               const SizedBox(height: 8),
                                               Slider(
@@ -203,9 +290,12 @@ class _LandingPageState extends State<LandingPage> {
                                                 max: 36,
                                                 min: 20,
                                                 divisions: 7,
-                                                label: generalProvider.fontSize.round().toString(),
+                                                label: generalProvider.fontSize
+                                                    .round()
+                                                    .toString(),
                                                 onChanged: (double val) {
-                                                  generalProvider.fontSize = val;
+                                                  generalProvider.fontSize =
+                                                      val;
                                                 },
                                               ),
                                             ],
@@ -240,7 +330,9 @@ class _LandingPageState extends State<LandingPage> {
                     value: 1,
                     child: ListTile(
                       leading: Icon(
-                        _isGridView ? Icons.radio_button_off : Icons.radio_button_on,
+                        _isGridView
+                            ? Icons.radio_button_off
+                            : Icons.radio_button_on,
                         size: 20,
                         color: Theme.of(context).colorScheme.primary,
                       ),
@@ -256,7 +348,9 @@ class _LandingPageState extends State<LandingPage> {
                     value: 2,
                     child: ListTile(
                       leading: Icon(
-                        _isGridView ? Icons.radio_button_on : Icons.radio_button_off,
+                        _isGridView
+                            ? Icons.radio_button_on
+                            : Icons.radio_button_off,
                         size: 20,
                         color: Theme.of(context).colorScheme.primary,
                       ),

@@ -10,7 +10,7 @@ import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:m3e_buttons/m3e_buttons.dart';
 
-String applicationVersion = "1.0.2";
+String applicationVersion = "1.0.3";
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -76,7 +76,10 @@ class _SettingsPageState extends State<SettingsPage> {
           elevation: 0,
           title: const Text(
             "الإعدادات",
-            style: TextStyle(fontWeight: FontWeight.bold),
+            style: TextStyle(
+              fontFamily: "Lateef",
+              fontSize: 32,
+            ),
           ),
           centerTitle: true,
         ),

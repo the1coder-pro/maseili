@@ -827,12 +827,24 @@ class _MyAppState extends State<MyApp> {
                 colorScheme: lightScheme,
                 useMaterial3: true,
                 scaffoldBackgroundColor: lightScheme.surface,
+                appBarTheme: AppBarTheme(
+                  titleTextStyle: textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.normal,
+                    color: lightScheme.onSurface,
+                  ),
+                ),
               ),
               darkTheme: ThemeData(
                 textTheme: textTheme,
                 colorScheme: darkScheme,
                 useMaterial3: true,
                 scaffoldBackgroundColor: darkScheme.surface,
+                appBarTheme: AppBarTheme(
+                  titleTextStyle: textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.normal,
+                    color: darkScheme.onSurface,
+                  ),
+                ),
               ),
               builder: (context, child) {
                 return MediaQuery(

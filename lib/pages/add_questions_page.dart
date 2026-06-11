@@ -39,7 +39,7 @@ class _AddQuestionPageState extends State<AddQuestionPage> {
         appBar: AppBar(
           title: const Text(
             "إضافة مسألة",
-            style: TextStyle(fontFamily: "Rubik", fontWeight: FontWeight.bold),
+            style: TextStyle(fontFamily: "Rubik", fontWeight: FontWeight.normal),
           ),
           centerTitle: true,
           leading: IconButton(
@@ -270,7 +270,7 @@ class _EditQuestionPageState extends State<EditQuestionPage> {
         appBar: AppBar(
           title: const Text(
             "تعديل مسألة",
-            style: TextStyle(fontFamily: "Rubik", fontWeight: FontWeight.bold),
+            style: TextStyle(fontFamily: "Rubik", fontWeight: FontWeight.normal),
           ),
           centerTitle: true,
           leading: IconButton(
