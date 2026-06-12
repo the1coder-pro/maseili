@@ -1,5 +1,5 @@
 name: masel
-description: "تطبيق مسائل بين الفرضين لإدارة ومتابعة المسائل اثناء الخطبة"
+description: "تطبيق مسائل بين الفرضين هو أداة تنظيمية متكاملة مصممة خصيصاً الخطباء، والمحاضرين لإدارة وتتبع شرح المسائل الفقهية والدروس بين الصلوات وفي المساجد المختلفة. يهدف التطبيق إلى تبسيط عملية التخطيط ومتابعة ما تم شرحه وما سيتم تقديمه للمصلين في قالب مرن ومبسط."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: "none" # Remove this line if you wish to publish to pub.dev
